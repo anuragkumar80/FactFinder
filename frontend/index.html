@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Fact Finder: verify any claim against the live web, with proof</title>
+<style>
+  :root {
+    --accent: #1d4ed8; --accent-soft: #e8eefc;
+    --bg: #f6f7f9; --card: #ffffff; --text: #16191f; --muted: #5b6472; --line: #e2e5ea;
+    --ok: #15803d; --ok-bg: #e7f6ec; --bad: #b91c1c; --bad-bg: #fdeaea; --unk: #a16207; --unk-bg: #fdf3dc;
+    --radius: 12px;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--text);
+         font: 16px/1.5 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+  .wrap { max-width: 980px; margin: 0 auto; padding: 24px 16px 64px; }
+  header h1 { margin: 0; font-size: 1.9rem; letter-spacing: -0.02em; }
+  header h1 span { color: var(--accent); }
+  header p { margin: 4px 0 20px; color: var(--muted); }
+  .card { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); padding: 16px; margin-bottom: 16px; }
+  textarea { width: 100%; min-height: 110px; resize: vertical; padding: 12px; font: inherit; color: inherit;
+             border: 1px solid var(--line); border-radius: 8px; background: #fff; }
+  textarea:focus, button:focus-visible, summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .row { display: flex; gap: 12px; align-items: center; justify-content: space-between; flex-wrap: wrap; margin-top: 10px; }
+  .count { color: var(--muted); font-size: .875rem; }
+  button.primary { background: var(--accent); color: #fff; border: 0; padding: 10px 22px; border-radius: 8px;
+                   font: inherit; font-weight: 600; cursor: pointer; }
+  button.primary:disabled { opacity: .55; cursor: progress; }
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; align-items: center; }
+  .chips small { color: var(--muted); }
+  .chip { background: var(--accent-soft); color: var(--accent); border: 0; padding: 6px 12px; border-radius: 999px;
+          font: inherit; font-size: .875rem; cursor: pointer; }
+  /* live trace */
+  .trace h2, .results h2 { font-size: 1rem; margin: 0 0 10px; }
+  .steps { display: flex; flex-wrap: wrap; gap: 8px; padding: 0; margin: 0 0 12px; list-style: none; }
+  .steps li { padding: 6px 12px; border-radius: 999px; background: #eef0f3; color: var(--muted); font-size: .875rem; }
+  .steps li.active { background: var(--accent); color: #fff; }
+  .steps li.done { background: var(--ok-bg); color: var(--ok); }
+  .log { font: .8125rem/1.5 ui-monospace, SFMono-Regular, Menlo, monospace; color: var(--muted);
+         max-height: 150px; overflow: auto; }
+  /* claim result */
+  .claim-head { display: flex; flex-wrap: wrap; gap: 12px; justify-content: space-between; align-items: flex-start; }
+  .claim-text { font-size: 1.125rem; font-weight: 600; margin: 6px 0 0; max-width: 620px; }
+  .badge { display: inline-block; padding: 2px 10px; border-radius: 999px; font-size: .75rem; font-weight: 600;
+           background: #eef0f3; color: var(--muted); text-transform: uppercase; letter-spacing: .03em; }
+  .verdict { text-align: center; min-width: 190px; padding: 12px 16px; border-radius: 10px; }
+  .verdict .label { font-size: 1.4rem; font-weight: 800; }
+  .verdict.Supported { background: var(--ok-bg); color: var(--ok); }
+  .verdict.Contradicted { background: var(--bad-bg); color: var(--bad); }
+  .verdict.Unclear { background: var(--unk-bg); color: var(--unk); }
+  .bar { height: 8px; background: rgba(0,0,0,.1); border-radius: 99px; margin: 8px 0 2px; overflow: hidden; }
+  .bar > i { display: block; height: 100%; background: currentColor; }
+  .banner { padding: 10px 14px; border-radius: 8px; margin-bottom: 14px; font-size: .9rem; background: var(--unk-bg); color: var(--unk); }
+  .banner.info { background: var(--accent-soft); color: var(--accent); }
+  details.how { margin: 14px 0; font-size: .9rem; }
+  details.how summary { cursor: pointer; color: var(--accent); font-weight: 600; }
+  table { border-collapse: collapse; width: 100%; margin-top: 8px; font-size: .8125rem; }
+  th, td { text-align: left; padding: 4px 8px; border-bottom: 1px solid var(--line); }
+  .tablewrap { overflow-x: auto; }
+  h3 { font-size: .95rem; margin: 18px 0 8px; }
+  .cols { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  @media (max-width: 720px) { .cols { grid-template-columns: 1fr; } .verdict { width: 100%; } }
+  .col > h4 { margin: 0 0 8px; font-size: .9rem; }
+  .col.sup > h4 { color: var(--ok); } .col.con > h4 { color: var(--bad); }
+  .ev { border: 1px solid var(--line); border-left-width: 4px; border-radius: 8px; padding: 10px 12px; margin-bottom: 10px; background: #fff; }
+  .col.sup .ev { border-left-color: var(--ok); } .col.con .ev { border-left-color: var(--bad); }
+  .ev .src { font-weight: 600; font-size: .9rem; word-break: break-word; }
+  .ev .src a { color: var(--accent); }
+  .ev .meta { color: var(--muted); font-size: .78rem; margin: 2px 0 6px; }
+  .ev blockquote { margin: 0 0 6px; padding-left: 10px; border-left: 2px solid var(--line); font-size: .9rem; }
+  .ev .why { font-size: .8125rem; color: var(--muted); }
+  .verified { color: var(--ok); font-size: .75rem; font-weight: 600; }
+  .empty { color: var(--muted); font-size: .875rem; font-style: italic; }
+  /* timeline */
+  .timeline { position: relative; height: 56px; margin: 8px 16px 0; }
+  .timeline::before { content: ""; position: absolute; left: 0; right: 0; top: 22px; height: 2px; background: var(--line); }
+  .dot { position: absolute; top: 14px; width: 18px; height: 18px; margin-left: -9px; border-radius: 50%;
+         border: 2px solid #fff; box-shadow: 0 0 0 1px var(--line); }
+  .dot.supports { background: var(--ok); } .dot.contradicts { background: var(--bad); } .dot.neutral { background: #9aa3b0; }
+  .tl-labels { display: flex; justify-content: space-between; margin: 0 8px; font-size: .75rem; color: var(--muted); }
+  .legend { font-size: .78rem; color: var(--muted); margin-top: 8px; }
+  footer { color: var(--muted); font-size: .8125rem; text-align: center; margin-top: 28px; }
+  .hidden { display: none; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>Fact <span>Finder</span></h1>
+    <p>Verify any claim against the live web, with proof.</p>
+  </header>
+
+  <section class="card">
+    <label for="claim" class="hidden">Claim to check</label>
+    <textarea id="claim" maxlength="1500" placeholder="Paste a claim or a short social-media post (up to 1,500 characters)…"></textarea>
+    <div class="row">
+      <span class="count"><span id="count">0</span> / 1500</span>
+      <button class="primary" id="go">Check claim</button>
+    </div>
+    <div class="chips" id="chips"><small>Try a demo claim:</small></div>
+  </section>
+
+  <section class="card trace hidden" id="trace" aria-live="polite">
+    <h2>Live pipeline</h2>
+    <ul class="steps" id="steps"></ul>
+    <div class="log" id="log"></div>
+  </section>
+
+  <div id="error" class="banner hidden" role="alert"></div>
+  <section class="results" id="results"></section>
+
+  <footer id="footer">Verdicts are computed by code from verified quotes. “Unclear” is a valid answer.</footer>
+</div>
+
+<script>
+const STAGES = [["extract","Extract claims"],["search","Search the web"],["fetch","Fetch pages"],
+                ["judge","Judge stance"],["verify","Verify quotes"],["score","Compute verdict"]];
+const $ = (s) => document.querySelector(s);
+
+// Safe DOM builder: all text goes through textContent, so page content can never inject HTML.
+function h(tag, props = {}, ...kids) {
+  const e = document.createElement(tag);
+  for (const [k, v] of Object.entries(props)) {
+    if (k === "class") e.className = v;
+    else if (k === "text") e.textContent = v;
+    else if (k === "style") e.setAttribute("style", v);
+    else e.setAttribute(k, v);
+  }
+  for (const kid of kids.flat()) if (kid != null) e.append(kid.nodeType ? kid : document.createTextNode(String(kid)));
+  return e;
+}
+const safeUrl = (u) => (/^https?:\/\//i.test(u || "") ? u : "#");
+const TIER = {official_academic:"Official / academic", wire_factcheck:"Wire / fact-checker",
+              major_outlet:"Major outlet", other_known:"Other known source", social:"Social", unknown:"Unknown source"};
+
+function humanAge(sec) {
+  if (sec < 90) return "moments ago";
+  if (sec < 5400) return Math.round(sec / 60) + " minutes ago";
+  if (sec < 172800) return Math.round(sec / 3600) + " hours ago";
+  return Math.round(sec / 86400) + " days ago";
+}
+function fmtDate(iso) {
+  const d = new Date(iso + "T00:00:00Z");
+  return d.toLocaleDateString(undefined, {year:"numeric", month:"short", day:"numeric", timeZone:"UTC"});
+}
+
+/* ---------- live trace ---------- */
+let maxStage = -1;
+function resetTrace() {
+  maxStage = -1;
+  const steps = $("#steps"); steps.replaceChildren();
+  for (const [id, label] of STAGES) steps.append(h("li", {"data-stage": id, text: label}));
+  $("#log").replaceChildren();
+  $("#trace").classList.remove("hidden");
+}
+function setStage(stage) {
+  const idx = STAGES.findIndex(([id]) => id === stage);
+  if (idx < 0) return;
+  if (idx > maxStage) maxStage = idx;
+  document.querySelectorAll("#steps li").forEach((li, i) => {
+    li.className = i < maxStage ? "done" : i === maxStage ? "active" : "";
+  });
+}
+function finishTrace() { document.querySelectorAll("#steps li").forEach((li) => (li.className = "done")); }
+function addLog(ev) {
+  const log = $("#log");
+  log.append(h("div", {text: `[${ev.t}s] ${ev.message}`}));
+  log.scrollTop = log.scrollHeight;
+}
+
+/* ---------- rendering ---------- */
+function evidenceCard(e) {
+  return h("div", {class: "ev"},
+    h("div", {class: "src"}, h("a", {href: safeUrl(e.url), target: "_blank", rel: "noopener noreferrer", text: e.domain})),
+    h("div", {class: "meta", text: `${TIER[e.tier] || e.tier} · ${e.date_known ? fmtDate(e.date) : "date unknown"}`}),
+    e.quote ? h("blockquote", {text: "“" + e.quote + "”"}) : null,
+    e.quote_verified ? h("div", {class: "verified", text: "✓ Quote found in the fetched page"}) : null,
+    e.reason ? h("div", {class: "why", text: e.reason}) : null);
+}
+
+function timeline(evidence) {
+  const dated = evidence.filter((e) => e.date_known);
+  const undated = evidence.filter((e) => !e.date_known);
+  const box = h("div");
+  if (dated.length) {
+    const t = dated.map((e) => new Date(e.date + "T00:00:00Z").getTime());
+    const min = Math.min(...t), max = Math.max(...t);
+    const line = h("div", {class: "timeline"});
+    dated.forEach((e, i) => {
+      const pct = max === min ? 50 : 4 + ((t[i] - min) / (max - min)) * 92;
+      line.append(h("span", {class: "dot " + e.stance_label, style: `left:${pct}%`,
+                             title: `${e.domain} · ${fmtDate(e.date)} · ${e.stance_label}`}));
+    });
+    box.append(line, h("div", {class: "tl-labels"}, h("span", {text: fmtDate(new Date(min).toISOString().slice(0,10))}),
+                        h("span", {text: fmtDate(new Date(max).toISOString().slice(0,10))})));
+  }
+  box.append(h("div", {class: "legend", text: "Green supports · red contradicts · grey inconclusive. Hover a dot for the source." +
+      (undated.length ? " Date unknown (never guessed): " + undated.map((e) => e.domain).join(", ") : "")}));
+  return box;
+}
+
+function breakdownTable(c) {
+  const b = c.breakdown;
+  const rows = c.evidence.map((e) => h("tr", {},
+    h("td", {text: e.domain}), h("td", {text: TIER[e.tier] || e.tier}),
+    h("td", {text: e.stance_label}), h("td", {text: e.credibility}),
+    h("td", {text: e.freshness + (e.date_known ? "" : " (no date)")}), h("td", {text: e.weight})));
+  return h("details", {class: "how"},
+    h("summary", {text: "How was this computed?"}),
+    h("p", {text: `Score S = Σ(stance × credibility × freshness) ÷ Σ(credibility × freshness) = ${c.score}. ` +
+      `Supported if S ≥ ${b.thresholds.supported_at_or_above}, Contradicted if S ≤ ${b.thresholds.contradicted_at_or_below}, otherwise Unclear. ` +
+      `Evidence from ${b.evidence_domains} distinct domain(s)` + (b.forced_unclear ? " (fewer than 2, so the result is forced to Unclear). " : ". ") +
+      `Confidence = |S| × coverage (${b.coverage}) × agreement (${b.agreement}). The AI never sets the verdict.`}),
+    h("div", {class: "tablewrap"}, h("table", {},
+      h("thead", {}, h("tr", {}, ["Source","Tier","Stance","Credibility","Freshness","Weight"].map((x) => h("th", {text: x})))),
+      h("tbody", {}, rows))));
+}
+
+function claimCard(c) {
+  const pct = Math.round(c.confidence * 100);
+  const sup = c.evidence.filter((e) => e.stance_label === "supports");
+  const con = c.evidence.filter((e) => e.stance_label === "contradicts");
+  const neu = c.evidence.filter((e) => e.stance_label === "neutral");
+  const card = h("article", {class: "card"});
+  card.append(h("div", {class: "claim-head"},
+    h("div", {}, h("span", {class: "badge", text: c.claim_type.replace("_", " ")}), h("p", {class: "claim-text", text: c.claim})),
+    h("div", {class: "verdict " + c.verdict}, h("div", {class: "label", text: c.verdict}),
+      h("div", {class: "bar"}, h("i", {style: `width:${pct}%`})), h("div", {text: `Confidence ${pct}%`}))));
+  card.append(breakdownTable(c));
+  card.append(h("h3", {text: `Evidence (${c.pages_read} pages read, ${c.discarded_quotes} unverified quotes discarded)`}));
+  card.append(h("div", {class: "cols"},
+    h("div", {class: "col sup"}, h("h4", {text: `Supports (${sup.length})`}),
+      sup.length ? sup.map(evidenceCard) : h("div", {class: "empty", text: "No verified supporting quotes."})),
+    h("div", {class: "col con"}, h("h4", {text: `Contradicts (${con.length})`}),
+      con.length ? con.map(evidenceCard) : h("div", {class: "empty", text: "No verified contradicting quotes."}))));
+  if (neu.length) card.append(h("details", {class: "how"},
+    h("summary", {text: `Read but inconclusive (${neu.length})`}), h("div", {style: "margin-top:8px"}, neu.map(evidenceCard))));
+  card.append(h("h3", {text: "Freshness timeline"}), timeline(c.evidence));
+  if (c.judge_errors && c.judge_errors.length)
+    card.append(h("div", {class: "legend", text: `${c.judge_errors.length} page(s) could not be judged (LLM error), so they were left out.`}));
+  return card;
+}
+
+function renderResult(r) {
+  const out = $("#results"); out.replaceChildren();
+  const m = r.meta || {};
+  if (m.stale_fallback) out.append(h("div", {class: "banner", text:
+    `Live search failed (${m.fallback_reason}). Showing the last cached result from ${humanAge(m.cache_age_seconds)}. It may be out of date.`}));
+  else if (m.cached) out.append(h("div", {class: "banner info", text:
+    `Cached result, checked ${humanAge(m.cache_age_seconds)} against live pages. Results are cached for 24 hours.`}));
+  if (!r.claims.length) {
+    out.append(h("div", {class: "banner", text: "No checkable factual claim was found in that text. Try a specific statement of fact."}));
+    return;
+  }
+  r.claims.forEach((c) => out.append(claimCard(c)));
+  if (m.elapsed_seconds != null && !m.cached) out.append(h("div", {class: "legend", text: `Checked live in ${m.elapsed_seconds}s.`}));
+}
+
+/* ---------- API ---------- */
+function showError(msg) { const e = $("#error"); e.textContent = msg; e.classList.remove("hidden"); }
+
+async function runCheck(text) {
+  $("#error").classList.add("hidden"); $("#results").replaceChildren();
+  resetTrace(); $("#go").disabled = true; $("#go").textContent = "Checking…";
+  try {
+    const res = await fetch("/api/check", {method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify({text})});
+    if (!res.ok) {
+      let msg = "Request failed."; try { const j = await res.json(); msg = j.detail || msg; } catch (_) {}
+      $("#trace").classList.add("hidden"); showError(msg); return;
+    }
+    const reader = res.body.getReader(), dec = new TextDecoder(); let buf = "";
+    for (;;) {
+      const {value, done} = await reader.read();
+      if (done) break;
+      buf += dec.decode(value, {stream: true});
+      let i;
+      while ((i = buf.indexOf("\n\n")) >= 0) {
+        const block = buf.slice(0, i); buf = buf.slice(i + 2);
+        let ev = "message", data = "";
+        for (const line of block.split("\n")) {
+          if (line.startsWith("event:")) ev = line.slice(6).trim();
+          else if (line.startsWith("data:")) data += line.slice(5).trim();
+        }
+        if (!data) continue;
+        const payload = JSON.parse(data);
+        if (ev === "trace") {
+          addLog(payload);
+          if (payload.stage === "cache" || payload.stage === "fallback") finishTrace(); else setStage(payload.stage);
+        } else if (ev === "result") { finishTrace(); renderResult(payload); }
+        else if (ev === "error") { showError(payload.message); }
+      }
+    }
+  } catch (err) {
+    showError("Network error. Is the server running? (" + err.message + ")");
+  } finally {
+    $("#go").disabled = false; $("#go").textContent = "Check claim"; loadQuota();
+  }
+}
+
+async function loadQuota() {
+  try {
+    const q = await (await fetch("/api/quota")).json();
+    $("#footer").textContent = `Free-tier TinyFish fetch budget today: ${q.fetches} of ${q.fetch_limit} used. ` +
+      "Verdicts are computed by code from verified quotes. “Unclear” is a valid answer.";
+  } catch (_) {}
+}
+
+async function loadDemos() {
+  try {
+    const demos = await (await fetch("/api/demo")).json();
+    for (const d of demos) {
+      const b = h("button", {class: "chip", type: "button", text: d.label});
+      b.addEventListener("click", () => { $("#claim").value = d.text; updateCount(); runCheck(d.text); });
+      $("#chips").append(b);
+    }
+  } catch (_) {}
+}
+
+function updateCount() { $("#count").textContent = $("#claim").value.length; }
+$("#claim").addEventListener("input", updateCount);
+$("#go").addEventListener("click", () => {
+  const t = $("#claim").value.trim();
+  if (!t) { showError("Please paste a claim to check."); return; }
+  runCheck(t);
+});
+loadDemos(); loadQuota();
+</script>
+</body>
+</html>
