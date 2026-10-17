@@ -1,0 +1,22 @@
+"/tmp/smoke.py"
+
+import sys, time
+sys.path.insert(0, "/home/claude/fact-finder")
+from backend import service
+def fake_run(text, emit):
+    for s in ["extract", "search", "fetch", "judge", "verify", "score"]:
+        emit(s, f"stage {s}"); time.sleep(0.2)
+    ev = lambda d, st, lab, dom, tier, dt: {"url": f"https://{dom}/x", "domain": dom, "title": "t", "stance_label": lab,
+        "stance": st, "quote": "NASA confirmed Apollo 11 landed on the Moon." if st else "", "reason": "States it.",
+        "quote_verified": bool(st), "date": dt, "date_known": dt is not None, "credibility": 1.0, "tier": tier,
+        "freshness": 0.9, "weight": 0.9}
+    return {"input": text, "claims": [{"claim": "Apollo 11 landed on the Moon", "claim_type": "science", "entities": [],
+        "queries": {}, "fetch_errors": [], "verdict": "Supported", "confidence": 0.74, "score": 0.81,
+        "breakdown": {"evidence_domains": 3, "coverage": 1.0, "agreement": 1.0, "forced_unclear": False,
+                      "thresholds": {"supported_at_or_above": 0.35, "contradicted_at_or_below": -0.35}},
+        "evidence": [ev(0,1,"supports","nasa.gov","official_academic","2026-09-01"), ev(0,1,"supports","reuters.com","wire_factcheck","2026-10-02"),
+                     ev(0,0,"neutral","bbc.com","major_outlet",None)], "discarded_quotes": 1, "pages_read": 3, "judge_errors": []}]}
+service.run_full = fake_run
+import uvicorn
+from backend.main import app
+uvicorn.run(app, host="127.0.0.1", port=8765, log_level="warning")
