@@ -1,0 +1,21 @@
+{
+  "_note": "Editable, public credibility tiers. First matching tier wins. A domain matches if it equals an entry or ends with '.' + entry; 'suffixes' match the end of the domain.",
+  "tiers": [
+    {"name": "official_academic", "weight": 1.0,
+     "suffixes": [".gov", ".edu", ".mil", ".int", ".gov.uk", ".ac.uk", ".gov.in", ".nic.in", ".gov.au", ".edu.au"],
+     "domains": ["who.int", "nasa.gov", "cdc.gov", "nih.gov", "nature.com", "science.org", "thelancet.com", "nejm.org", "arxiv.org", "pubmed.ncbi.nlm.nih.gov", "un.org", "worldbank.org", "pib.gov.in"]},
+    {"name": "wire_factcheck", "weight": 0.9,
+     "suffixes": [],
+     "domains": ["reuters.com", "apnews.com", "afp.com", "snopes.com", "politifact.com", "factcheck.org", "fullfact.org", "factcheck.afp.com", "boomlive.in", "altnews.in", "vishvasnews.com", "pti.in"]},
+    {"name": "major_outlet", "weight": 0.7,
+     "suffixes": [],
+     "domains": ["bbc.com", "bbc.co.uk", "nytimes.com", "theguardian.com", "washingtonpost.com", "wsj.com", "cnn.com", "npr.org", "aljazeera.com", "bloomberg.com", "ft.com", "economist.com", "thehindu.com", "indianexpress.com", "hindustantimes.com", "ndtv.com", "timesofindia.indiatimes.com", "scientificamerican.com", "nationalgeographic.com"]},
+    {"name": "other_known", "weight": 0.4,
+     "suffixes": [],
+     "domains": ["wikipedia.org", "britannica.com", "forbes.com", "time.com", "usatoday.com", "newsweek.com", "medium.com", "healthline.com", "webmd.com", "mayoclinic.org"]},
+    {"name": "social", "weight": 0.2,
+     "suffixes": [],
+     "domains": ["x.com", "twitter.com", "facebook.com", "instagram.com", "tiktok.com", "reddit.com", "youtube.com", "quora.com", "telegram.org", "t.me", "whatsapp.com"]}
+  ],
+  "default": {"name": "unknown", "weight": 0.2}
+}
