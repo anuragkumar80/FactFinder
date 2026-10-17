@@ -1,0 +1,10 @@
+[
+  {"id": "apollo", "label": "Apollo 11 Moon landing", "expected": "Supported",
+   "text": "Apollo 11 landed the first humans on the Moon in July 1969."},
+  {"id": "greatwall", "label": "Great Wall from space", "expected": "Contradicted",
+   "text": "The Great Wall of China is visible from space with the naked eye."},
+  {"id": "knuckles", "label": "Knuckle cracking", "expected": "Contradicted",
+   "text": "Cracking your knuckles causes arthritis."},
+  {"id": "fasting", "label": "Intermittent fasting", "expected": "Unclear",
+   "text": "Intermittent fasting is the best way to lose weight."}
+]
