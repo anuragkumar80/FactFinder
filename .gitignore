@@ -1,7 +1,8 @@
 # Environment variables (CRITICAL: never commit keys)
 .env
-.env.local
-.env.*.local
+.env*
+*.env
+Important
 
 # Python
 __pycache__/

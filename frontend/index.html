@@ -1,124 +1,682 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="light">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Fact Finder: verify any claim against the live web, with proof</title>
+<title>FactFinder | Verify Any Claim Against the Live Web</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
   :root {
-    --accent: #1d4ed8; --accent-soft: #e8eefc;
-    --bg: #f6f7f9; --card: #ffffff; --text: #16191f; --muted: #5b6472; --line: #e2e5ea;
-    --ok: #15803d; --ok-bg: #e7f6ec; --bad: #b91c1c; --bad-bg: #fdeaea; --unk: #a16207; --unk-bg: #fdf3dc;
-    --radius: 12px;
+    --font-heading: 'Outfit', -apple-system, sans-serif;
+    --font-body: 'Plus Jakarta Sans', -apple-system, sans-serif;
+    --font-mono: 'JetBrains Mono', monospace;
+    
+    /* Light Theme (Default) */
+    --bg: #f8fafc;
+    --bg-mesh: radial-gradient(at 0% 0%, rgba(99, 102, 241, 0.08) 0px, transparent 50%),
+               radial-gradient(at 100% 0%, rgba(6, 182, 212, 0.08) 0px, transparent 50%),
+               radial-gradient(at 50% 100%, rgba(244, 63, 94, 0.04) 0px, transparent 50%);
+    --card: #ffffff;
+    --card-glass: rgba(255, 255, 255, 0.85);
+    --border: #e2e8f0;
+    --border-hover: #cbd5e1;
+    --text: #0f172a;
+    --text-muted: #64748b;
+    --text-subtle: #94a3b8;
+    
+    --brand-from: #6366f1;
+    --brand-to: #06b6d4;
+    --brand-gradient: linear-gradient(135deg, var(--brand-from), var(--brand-to));
+    --brand-glow: rgba(99, 102, 241, 0.25);
+    
+    --ok: #059669;
+    --ok-glow: rgba(16, 185, 129, 0.2);
+    --ok-bg: #ecfdf5;
+    --ok-border: #a7f3d0;
+    
+    --bad: #e11d48;
+    --bad-glow: rgba(244, 63, 94, 0.2);
+    --bad-bg: #fff1f2;
+    --bad-border: #fecdd3;
+    
+    --unk: #d97706;
+    --unk-glow: rgba(245, 158, 11, 0.2);
+    --unk-bg: #fffbeb;
+    --unk-border: #fde68a;
+    
+    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.07), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
+    --shadow-lg: 0 12px 24px -4px rgba(15, 23, 42, 0.08), 0 4px 8px -2px rgba(15, 23, 42, 0.04);
+    --shadow-glow: 0 0 25px var(--brand-glow);
+    --radius-sm: 8px;
+    --radius-md: 12px;
+    --radius-lg: 18px;
+    --radius-pill: 9999px;
   }
-  * { box-sizing: border-box; }
-  body { margin: 0; background: var(--bg); color: var(--text);
-         font: 16px/1.5 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
-  .wrap { max-width: 980px; margin: 0 auto; padding: 24px 16px 64px; }
-  header h1 { margin: 0; font-size: 1.9rem; letter-spacing: -0.02em; }
-  header h1 span { color: var(--accent); }
-  header p { margin: 4px 0 20px; color: var(--muted); }
-  .card { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); padding: 16px; margin-bottom: 16px; }
-  textarea { width: 100%; min-height: 110px; resize: vertical; padding: 12px; font: inherit; color: inherit;
-             border: 1px solid var(--line); border-radius: 8px; background: #fff; }
-  textarea:focus, button:focus-visible, summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
-  .row { display: flex; gap: 12px; align-items: center; justify-content: space-between; flex-wrap: wrap; margin-top: 10px; }
-  .count { color: var(--muted); font-size: .875rem; }
-  button.primary { background: var(--accent); color: #fff; border: 0; padding: 10px 22px; border-radius: 8px;
-                   font: inherit; font-weight: 600; cursor: pointer; }
-  button.primary:disabled { opacity: .55; cursor: progress; }
-  .chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; align-items: center; }
-  .chips small { color: var(--muted); }
-  .chip { background: var(--accent-soft); color: var(--accent); border: 0; padding: 6px 12px; border-radius: 999px;
-          font: inherit; font-size: .875rem; cursor: pointer; }
-  /* live trace */
-  .trace h2, .results h2 { font-size: 1rem; margin: 0 0 10px; }
-  .steps { display: flex; flex-wrap: wrap; gap: 8px; padding: 0; margin: 0 0 12px; list-style: none; }
-  .steps li { padding: 6px 12px; border-radius: 999px; background: #eef0f3; color: var(--muted); font-size: .875rem; }
-  .steps li.active { background: var(--accent); color: #fff; }
-  .steps li.done { background: var(--ok-bg); color: var(--ok); }
-  .log { font: .8125rem/1.5 ui-monospace, SFMono-Regular, Menlo, monospace; color: var(--muted);
-         max-height: 150px; overflow: auto; }
-  /* claim result */
-  .claim-head { display: flex; flex-wrap: wrap; gap: 12px; justify-content: space-between; align-items: flex-start; }
-  .claim-text { font-size: 1.125rem; font-weight: 600; margin: 6px 0 0; max-width: 620px; }
-  .badge { display: inline-block; padding: 2px 10px; border-radius: 999px; font-size: .75rem; font-weight: 600;
-           background: #eef0f3; color: var(--muted); text-transform: uppercase; letter-spacing: .03em; }
-  .verdict { text-align: center; min-width: 190px; padding: 12px 16px; border-radius: 10px; }
-  .verdict .label { font-size: 1.4rem; font-weight: 800; }
-  .verdict.Supported { background: var(--ok-bg); color: var(--ok); }
-  .verdict.Contradicted { background: var(--bad-bg); color: var(--bad); }
-  .verdict.Unclear { background: var(--unk-bg); color: var(--unk); }
-  .bar { height: 8px; background: rgba(0,0,0,.1); border-radius: 99px; margin: 8px 0 2px; overflow: hidden; }
-  .bar > i { display: block; height: 100%; background: currentColor; }
-  .banner { padding: 10px 14px; border-radius: 8px; margin-bottom: 14px; font-size: .9rem; background: var(--unk-bg); color: var(--unk); }
-  .banner.info { background: var(--accent-soft); color: var(--accent); }
-  details.how { margin: 14px 0; font-size: .9rem; }
-  details.how summary { cursor: pointer; color: var(--accent); font-weight: 600; }
-  table { border-collapse: collapse; width: 100%; margin-top: 8px; font-size: .8125rem; }
-  th, td { text-align: left; padding: 4px 8px; border-bottom: 1px solid var(--line); }
-  .tablewrap { overflow-x: auto; }
-  h3 { font-size: .95rem; margin: 18px 0 8px; }
-  .cols { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
-  @media (max-width: 720px) { .cols { grid-template-columns: 1fr; } .verdict { width: 100%; } }
-  .col > h4 { margin: 0 0 8px; font-size: .9rem; }
-  .col.sup > h4 { color: var(--ok); } .col.con > h4 { color: var(--bad); }
-  .ev { border: 1px solid var(--line); border-left-width: 4px; border-radius: 8px; padding: 10px 12px; margin-bottom: 10px; background: #fff; }
-  .col.sup .ev { border-left-color: var(--ok); } .col.con .ev { border-left-color: var(--bad); }
-  .ev .src { font-weight: 600; font-size: .9rem; word-break: break-word; }
-  .ev .src a { color: var(--accent); }
-  .ev .meta { color: var(--muted); font-size: .78rem; margin: 2px 0 6px; }
-  .ev blockquote { margin: 0 0 6px; padding-left: 10px; border-left: 2px solid var(--line); font-size: .9rem; }
-  .ev .why { font-size: .8125rem; color: var(--muted); }
-  .verified { color: var(--ok); font-size: .75rem; font-weight: 600; }
-  .empty { color: var(--muted); font-size: .875rem; font-style: italic; }
-  /* timeline */
-  .timeline { position: relative; height: 56px; margin: 8px 16px 0; }
-  .timeline::before { content: ""; position: absolute; left: 0; right: 0; top: 22px; height: 2px; background: var(--line); }
-  .dot { position: absolute; top: 14px; width: 18px; height: 18px; margin-left: -9px; border-radius: 50%;
-         border: 2px solid #fff; box-shadow: 0 0 0 1px var(--line); }
-  .dot.supports { background: var(--ok); } .dot.contradicts { background: var(--bad); } .dot.neutral { background: #9aa3b0; }
-  .tl-labels { display: flex; justify-content: space-between; margin: 0 8px; font-size: .75rem; color: var(--muted); }
-  .legend { font-size: .78rem; color: var(--muted); margin-top: 8px; }
-  footer { color: var(--muted); font-size: .8125rem; text-align: center; margin-top: 28px; }
-  .hidden { display: none; }
+
+  [data-theme="dark"] {
+    --bg: #090d16;
+    --bg-mesh: radial-gradient(at 0% 0%, rgba(99, 102, 241, 0.15) 0px, transparent 50%),
+               radial-gradient(at 100% 0%, rgba(6, 182, 212, 0.12) 0px, transparent 50%),
+               radial-gradient(at 50% 100%, rgba(244, 63, 94, 0.06) 0px, transparent 50%);
+    --card: #111827;
+    --card-glass: rgba(17, 24, 39, 0.8);
+    --border: #1e293b;
+    --border-hover: #334155;
+    --text: #f8fafc;
+    --text-muted: #94a3b8;
+    --text-subtle: #64748b;
+    
+    --ok: #10b981;
+    --ok-glow: rgba(16, 185, 129, 0.3);
+    --ok-bg: rgba(16, 185, 129, 0.12);
+    --ok-border: rgba(16, 185, 129, 0.3);
+    
+    --bad: #f43f5e;
+    --bad-glow: rgba(244, 63, 94, 0.3);
+    --bad-bg: rgba(244, 63, 94, 0.12);
+    --bad-border: rgba(244, 63, 94, 0.3);
+    
+    --unk: #f59e0b;
+    --unk-glow: rgba(245, 158, 11, 0.3);
+    --unk-bg: rgba(245, 158, 11, 0.12);
+    --unk-border: rgba(245, 158, 11, 0.3);
+    
+    --shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.3);
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.4);
+    --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
+  }
+
+  * { box-sizing: border-box; transition: background-color 0.25s ease, border-color 0.25s ease, color 0.25s ease; }
+  body {
+    margin: 0;
+    min-height: 100vh;
+    background: var(--bg);
+    background-image: var(--bg-mesh);
+    color: var(--text);
+    font-family: var(--font-body);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .wrap { max-width: 1020px; margin: 0 auto; padding: 24px 20px 80px; }
+
+  /* Navbar Header */
+  .navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 24px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 32px;
+  }
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    text-decoration: none;
+    color: var(--text);
+  }
+  .brand-icon {
+    width: 38px;
+    height: 38px;
+    border-radius: var(--radius-sm);
+    background: var(--brand-gradient);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 12px var(--brand-glow);
+  }
+  .brand-icon svg { width: 22px; height: 22px; fill: #ffffff; }
+  .brand-name {
+    font-family: var(--font-heading);
+    font-weight: 800;
+    font-size: 1.45rem;
+    letter-spacing: -0.03em;
+  }
+  .gradient-text {
+    background: var(--brand-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .nav-right { display: flex; align-items: center; gap: 12px; }
+  
+  .badge-live {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    padding: 6px 12px;
+    border-radius: var(--radius-pill);
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    box-shadow: var(--shadow-sm);
+  }
+  .pulse-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #10b981;
+    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
+    animation: pulse 2s infinite;
+  }
+  @keyframes pulse {
+    0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
+    70% { transform: scale(1); box-shadow: 0 0 0 8px rgba(16, 185, 129, 0); }
+    100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+  }
+
+  .theme-btn {
+    background: var(--card);
+    border: 1px solid var(--border);
+    width: 38px;
+    height: 38px;
+    border-radius: var(--radius-sm);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: var(--text);
+    box-shadow: var(--shadow-sm);
+  }
+  .theme-btn:hover { border-color: var(--border-hover); transform: translateY(-1px); }
+
+  /* Hero Section */
+  .hero { text-align: center; margin-bottom: 32px; }
+  .hero-pill {
+    display: inline-block;
+    padding: 4px 14px;
+    background: rgba(99, 102, 241, 0.1);
+    color: var(--brand-from);
+    border: 1px solid rgba(99, 102, 241, 0.2);
+    border-radius: var(--radius-pill);
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 12px;
+  }
+  .hero h1 {
+    font-family: var(--font-heading);
+    font-size: 2.6rem;
+    font-weight: 800;
+    line-height: 1.15;
+    letter-spacing: -0.04em;
+    margin: 0 0 10px;
+  }
+  .hero p {
+    color: var(--text-muted);
+    font-size: 1.08rem;
+    max-width: 680px;
+    margin: 0 auto;
+  }
+
+  /* Cards */
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 24px;
+    margin-bottom: 24px;
+    box-shadow: var(--shadow-md);
+    backdrop-filter: blur(12px);
+  }
+
+  /* Input Box */
+  .input-container { position: relative; }
+  textarea {
+    width: 100%;
+    min-height: 130px;
+    resize: vertical;
+    padding: 16px;
+    font-family: var(--font-body);
+    font-size: 1.05rem;
+    color: var(--text);
+    background: var(--card);
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-md);
+    outline: none;
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.02);
+  }
+  textarea:focus {
+    border-color: var(--brand-from);
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
+  }
+  .input-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 12px;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  .char-count { font-size: 0.85rem; color: var(--text-subtle); font-family: var(--font-mono); }
+  .btn-group { display: flex; align-items: center; gap: 10px; }
+  
+  .btn-secondary {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+    padding: 10px 16px;
+    border-radius: var(--radius-sm);
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  .btn-secondary:hover { border-color: var(--border-hover); color: var(--text); }
+  
+  .btn-primary {
+    background: var(--brand-gradient);
+    color: #ffffff;
+    border: none;
+    padding: 11px 26px;
+    border-radius: var(--radius-sm);
+    font-family: var(--font-heading);
+    font-size: 1rem;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 4px 14px var(--brand-glow);
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .btn-primary:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 18px rgba(99, 102, 241, 0.35);
+  }
+  .btn-primary:disabled { opacity: 0.6; cursor: wait; transform: none; }
+
+  /* Demo Chips */
+  .demo-strip { margin-top: 18px; padding-top: 16px; border-top: 1px solid var(--border); }
+  .demo-strip span { font-size: 0.82rem; font-weight: 600; color: var(--text-muted); margin-right: 8px; }
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
+  .chip {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 7px 14px;
+    border-radius: var(--radius-pill);
+    font-size: 0.85rem;
+    font-weight: 500;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .chip:hover { border-color: var(--brand-from); color: var(--brand-from); background: var(--card); }
+  .chip-tag {
+    font-size: 0.7rem;
+    font-weight: 700;
+    padding: 1px 6px;
+    border-radius: var(--radius-pill);
+  }
+  .chip-tag.sup { background: var(--ok-bg); color: var(--ok); }
+  .chip-tag.con { background: var(--bad-bg); color: var(--bad); }
+  .chip-tag.unc { background: var(--unk-bg); color: var(--unk); }
+
+  /* Live Stepper */
+  .stepper-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
+  .stepper-title { font-family: var(--font-heading); font-size: 1.15rem; font-weight: 700; margin: 0; }
+  .steps-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+    gap: 10px;
+    list-style: none;
+    padding: 0;
+    margin: 0 0 16px;
+  }
+  .step-item {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 10px 12px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .step-item.active {
+    background: rgba(99, 102, 241, 0.1);
+    border-color: var(--brand-from);
+    color: var(--brand-from);
+    box-shadow: 0 0 12px rgba(99, 102, 241, 0.2);
+  }
+  .step-item.done {
+    background: var(--ok-bg);
+    border-color: var(--ok-border);
+    color: var(--ok);
+  }
+  .step-num {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.72rem;
+  }
+  .step-item.active .step-num { background: var(--brand-from); color: #fff; }
+  .step-item.done .step-num { background: var(--ok); color: #fff; }
+
+  .log-terminal {
+    background: #090d16;
+    color: #cbd5e1;
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    padding: 12px 16px;
+    border-radius: var(--radius-sm);
+    max-height: 140px;
+    overflow-y: auto;
+    border: 1px solid #1e293b;
+  }
+  .log-line { margin: 3px 0; }
+  .log-line span.time { color: #64748b; margin-right: 8px; }
+
+  /* Verdict Presentation Card */
+  .verdict-hero {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 20px;
+    padding: 24px;
+    border-radius: var(--radius-md);
+    margin-bottom: 20px;
+  }
+  .verdict-hero.Supported {
+    background: var(--ok-bg);
+    border: 1.5px solid var(--ok-border);
+    box-shadow: 0 6px 20px var(--ok-glow);
+  }
+  .verdict-hero.Contradicted {
+    background: var(--bad-bg);
+    border: 1.5px solid var(--bad-border);
+    box-shadow: 0 6px 20px var(--bad-glow);
+  }
+  .verdict-hero.Unclear {
+    background: var(--unk-bg);
+    border: 1.5px solid var(--unk-border);
+    box-shadow: 0 6px 20px var(--unk-glow);
+  }
+  
+  .verdict-label-box { display: flex; flex-direction: column; }
+  .verdict-sub { font-size: 0.82rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-muted); }
+  .verdict-title { font-family: var(--font-heading); font-size: 2.2rem; font-weight: 800; line-height: 1.1; margin: 4px 0 0; }
+  .Supported .verdict-title { color: var(--ok); }
+  .Contradicted .verdict-title { color: var(--bad); }
+  .Unclear .verdict-title { color: var(--unk); }
+
+  .confidence-meter {
+    text-align: right;
+    min-width: 170px;
+  }
+  .confidence-pct { font-family: var(--font-heading); font-size: 1.9rem; font-weight: 800; }
+  .confidence-bar {
+    height: 8px;
+    background: rgba(0, 0, 0, 0.1);
+    border-radius: var(--radius-pill);
+    overflow: hidden;
+    margin-top: 6px;
+  }
+  .confidence-bar-inner { height: 100%; border-radius: var(--radius-pill); }
+  .Supported .confidence-bar-inner { background: var(--ok); }
+  .Contradicted .confidence-bar-inner { background: var(--bad); }
+  .Unclear .confidence-bar-inner { background: var(--unk); }
+
+  .claim-statement {
+    font-family: var(--font-heading);
+    font-size: 1.3rem;
+    font-weight: 700;
+    margin: 14px 0 6px;
+    line-height: 1.4;
+  }
+  .tag-row { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 20px; }
+  .tag {
+    font-size: 0.75rem;
+    font-weight: 700;
+    padding: 3px 10px;
+    border-radius: var(--radius-pill);
+    background: var(--bg);
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+    text-transform: uppercase;
+  }
+
+  /* Two Column Evidence Layout */
+  .evidence-section { margin-top: 24px; }
+  .evidence-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  @media (max-width: 768px) { .evidence-cols { grid-template-columns: 1fr; } }
+  
+  .col-head {
+    font-family: var(--font-heading);
+    font-size: 1.05rem;
+    font-weight: 700;
+    margin: 0 0 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .col-head.sup { color: var(--ok); }
+  .col-head.con { color: var(--bad); }
+
+  .evidence-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: 16px;
+    margin-bottom: 14px;
+    position: relative;
+    box-shadow: var(--shadow-sm);
+  }
+  .evidence-card.sup { border-left: 4px solid var(--ok); }
+  .evidence-card.con { border-left: 4px solid var(--bad); }
+
+  .ev-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 6px; }
+  .ev-domain a {
+    font-family: var(--font-heading);
+    font-weight: 700;
+    font-size: 0.95rem;
+    color: var(--brand-from);
+    text-decoration: none;
+  }
+  .ev-domain a:hover { text-decoration: underline; }
+  .tier-pill {
+    font-size: 0.72rem;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: var(--radius-pill);
+    background: var(--bg);
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+  }
+  .ev-date { font-size: 0.78rem; color: var(--text-subtle); margin-bottom: 8px; }
+
+  .ev-quote {
+    font-size: 0.92rem;
+    font-style: italic;
+    background: var(--bg);
+    border-left: 3px solid var(--border);
+    padding: 8px 12px;
+    border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+    margin: 8px 0;
+    color: var(--text);
+  }
+  .ev-verified {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--ok);
+    margin-top: 4px;
+  }
+  .ev-reason { font-size: 0.84rem; color: var(--text-muted); margin-top: 6px; }
+
+  /* Timeline */
+  .timeline-box { margin-top: 24px; padding-top: 18px; border-top: 1px solid var(--border); }
+  .timeline-bar { position: relative; height: 50px; margin: 12px 14px 4px; }
+  .timeline-bar::before {
+    content: ""; position: absolute; left: 0; right: 0; top: 22px; height: 2px; background: var(--border);
+  }
+  .tl-dot {
+    position: absolute; top: 14px; width: 18px; height: 18px; margin-left: -9px;
+    border-radius: 50%; border: 2px solid var(--card); box-shadow: 0 0 0 1px var(--border);
+    cursor: pointer;
+  }
+  .tl-dot.supports { background: var(--ok); }
+  .tl-dot.contradicts { background: var(--bad); }
+  .tl-dot.neutral { background: #94a3b8; }
+  .tl-dates { display: flex; justify-content: space-between; font-size: 0.78rem; color: var(--text-subtle); font-family: var(--font-mono); }
+
+  /* Math Accordion */
+  details.math-box {
+    margin-top: 20px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    background: var(--bg);
+    overflow: hidden;
+  }
+  details.math-box summary {
+    padding: 12px 18px;
+    font-weight: 700;
+    font-size: 0.92rem;
+    cursor: pointer;
+    color: var(--brand-from);
+    user-select: none;
+  }
+  .math-content { padding: 16px 18px; border-top: 1px solid var(--border); font-size: 0.88rem; }
+  .math-formula {
+    background: var(--card);
+    padding: 12px;
+    border-radius: var(--radius-sm);
+    font-family: var(--font-mono);
+    text-align: center;
+    margin: 8px 0;
+    border: 1px solid var(--border);
+  }
+  table.math-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+    font-size: 0.82rem;
+  }
+  table.math-table th, table.math-table td {
+    padding: 6px 10px;
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+  }
+  table.math-table th { font-weight: 700; color: var(--text-muted); }
+
+  .banner {
+    padding: 14px 18px;
+    border-radius: var(--radius-md);
+    font-size: 0.92rem;
+    font-weight: 600;
+    margin-bottom: 20px;
+  }
+  .banner.info { background: rgba(99, 102, 241, 0.1); border: 1px solid rgba(99, 102, 241, 0.2); color: var(--brand-from); }
+  .banner.warn { background: var(--unk-bg); border: 1px solid var(--unk-border); color: var(--unk); }
+  .banner.err { background: var(--bad-bg); border: 1px solid var(--bad-border); color: var(--bad); }
+
+  footer {
+    text-align: center;
+    margin-top: 48px;
+    font-size: 0.82rem;
+    color: var(--text-muted);
+  }
+  footer a { color: var(--brand-from); text-decoration: none; }
+  .hidden { display: none !important; }
 </style>
 </head>
 <body>
 <div class="wrap">
-  <header>
-    <h1>Fact <span>Finder</span></h1>
-    <p>Verify any claim against the live web, with proof.</p>
-  </header>
-
-  <section class="card">
-    <label for="claim" class="hidden">Claim to check</label>
-    <textarea id="claim" maxlength="1500" placeholder="Paste a claim or a short social-media post (up to 1,500 characters)…"></textarea>
-    <div class="row">
-      <span class="count"><span id="count">0</span> / 1500</span>
-      <button class="primary" id="go">Check claim</button>
+  <!-- Navbar -->
+  <nav class="navbar">
+    <a href="#" class="brand">
+      <div class="brand-icon">
+        <svg viewBox="0 0 24 24"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 10.99h7c-.53 4.12-3.28 7.79-7 8.94V12H5V6.3l7-3.11v8.8z"/></svg>
+      </div>
+      <div class="brand-name">Fact<span class="gradient-text">Finder</span></div>
+    </a>
+    <div class="nav-right">
+      <div class="badge-live">
+        <div class="pulse-dot"></div>
+        <span>TinyFish Live Web</span>
+      </div>
+      <button class="theme-btn" id="themeToggle" title="Toggle Light/Dark Theme">🌙</button>
     </div>
-    <div class="chips" id="chips"><small>Try a demo claim:</small></div>
+  </nav>
+
+  <!-- Hero -->
+  <section class="hero">
+    <div class="hero-pill">✦ AzinHack 2026 Live Prototype v0.1</div>
+    <h1>Verify Any Claim Against the <span class="gradient-text">Live Web</span></h1>
+    <p>Real-time atomic claim extraction, live TinyFish search, and zero-trust verbatim quote verification. The AI reads; deterministic code computes the truth.</p>
   </section>
 
+  <!-- Input Section -->
+  <section class="card">
+    <div class="input-container">
+      <label for="claim" class="hidden">Claim to check</label>
+      <textarea id="claim" maxlength="1500" placeholder="Paste any statement, news snippet, or viral claim to verify (up to 1,500 characters)…"></textarea>
+    </div>
+    <div class="input-footer">
+      <span class="char-count"><span id="count">0</span> / 1500 chars</span>
+      <div class="btn-group">
+        <button type="button" class="btn-secondary" id="clearBtn">Clear</button>
+        <button type="button" class="btn-primary" id="go">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+          <span>Verify Claim</span>
+        </button>
+      </div>
+    </div>
+    <div class="demo-strip">
+      <span>Pre-warmed demo claims:</span>
+      <div class="chips" id="chips"></div>
+    </div>
+  </section>
+
+  <!-- Live Pipeline Stepper -->
   <section class="card trace hidden" id="trace" aria-live="polite">
-    <h2>Live pipeline</h2>
-    <ul class="steps" id="steps"></ul>
-    <div class="log" id="log"></div>
+    <div class="stepper-header">
+      <h3 class="stepper-title">Live Pipeline Execution</h3>
+      <span class="char-count" id="pipelineTimer">Streaming via SSE</span>
+    </div>
+    <ul class="steps-list" id="steps"></ul>
+    <div class="log-terminal" id="log"></div>
   </section>
 
-  <div id="error" class="banner hidden" role="alert"></div>
+  <!-- Dynamic Alerts & Results -->
+  <div id="error" class="banner err hidden" role="alert"></div>
   <section class="results" id="results"></section>
 
-  <footer id="footer">Verdicts are computed by code from verified quotes. “Unclear” is a valid answer.</footer>
+  <!-- Footer -->
+  <footer id="footer">
+    <p id="quotaFooter">Loading daily TinyFish quota counter…</p>
+    <p>Built for AzinHack 2026 by <strong>Team Fine Shyts</strong> (Kunal, Dev, Anurag, Uday) · Open Source MIT</p>
+  </footer>
 </div>
 
 <script>
-const STAGES = [["extract","Extract claims"],["search","Search the web"],["fetch","Fetch pages"],
-                ["judge","Judge stance"],["verify","Verify quotes"],["score","Compute verdict"]];
+const STAGES = [
+  ["extract", "1. Extract Claims"],
+  ["search", "2. Search Live Web"],
+  ["fetch", "3. Fetch Markdown"],
+  ["judge", "4. Judge Stance"],
+  ["verify", "5. Verify Quotes"],
+  ["score", "6. Compute Verdict"]
+];
+
 const $ = (s) => document.querySelector(s);
 
-// Safe DOM builder: all text goes through textContent, so page content can never inject HTML.
+// Safe DOM element builder
 function h(tag, props = {}, ...kids) {
   const e = document.createElement(tag);
   for (const [k, v] of Object.entries(props)) {
@@ -127,12 +685,21 @@ function h(tag, props = {}, ...kids) {
     else if (k === "style") e.setAttribute("style", v);
     else e.setAttribute(k, v);
   }
-  for (const kid of kids.flat()) if (kid != null) e.append(kid.nodeType ? kid : document.createTextNode(String(kid)));
+  for (const kid of kids.flat()) {
+    if (kid != null) e.append(kid.nodeType ? kid : document.createTextNode(String(kid)));
+  }
   return e;
 }
+
 const safeUrl = (u) => (/^https?:\/\//i.test(u || "") ? u : "#");
-const TIER = {official_academic:"Official / academic", wire_factcheck:"Wire / fact-checker",
-              major_outlet:"Major outlet", other_known:"Other known source", social:"Social", unknown:"Unknown source"};
+const TIER = {
+  official_academic: "Official / Academic (1.0)",
+  wire_factcheck: "Wire Agency / Fact-Checker (0.9)",
+  major_outlet: "Major Outlet (0.7)",
+  other_known: "Known Source (0.4)",
+  social: "Social Media (0.2)",
+  unknown: "Unknown Source (0.2)"
+};
 
 function humanAge(sec) {
   if (sec < 90) return "moments ago";
@@ -140,143 +707,270 @@ function humanAge(sec) {
   if (sec < 172800) return Math.round(sec / 3600) + " hours ago";
   return Math.round(sec / 86400) + " days ago";
 }
+
 function fmtDate(iso) {
+  if (!iso) return "Date unknown";
   const d = new Date(iso + "T00:00:00Z");
   return d.toLocaleDateString(undefined, {year:"numeric", month:"short", day:"numeric", timeZone:"UTC"});
 }
 
-/* ---------- live trace ---------- */
+/* Theme Toggle */
+const themeBtn = $("#themeToggle");
+themeBtn.addEventListener("click", () => {
+  const cur = document.documentElement.getAttribute("data-theme") || "light";
+  const nxt = cur === "light" ? "dark" : "light";
+  document.documentElement.setAttribute("data-theme", nxt);
+  themeBtn.textContent = nxt === "light" ? "🌙" : "☀️";
+});
+
+/* Live Stepper */
 let maxStage = -1;
 function resetTrace() {
   maxStage = -1;
   const steps = $("#steps"); steps.replaceChildren();
-  for (const [id, label] of STAGES) steps.append(h("li", {"data-stage": id, text: label}));
+  for (const [id, label] of STAGES) {
+    const li = h("li", {class: "step-item", "data-stage": id},
+      h("div", {class: "step-num", text: id[0].toUpperCase()}),
+      h("span", {text: label})
+    );
+    steps.append(li);
+  }
   $("#log").replaceChildren();
   $("#trace").classList.remove("hidden");
 }
+
 function setStage(stage) {
   const idx = STAGES.findIndex(([id]) => id === stage);
   if (idx < 0) return;
   if (idx > maxStage) maxStage = idx;
-  document.querySelectorAll("#steps li").forEach((li, i) => {
-    li.className = i < maxStage ? "done" : i === maxStage ? "active" : "";
+  document.querySelectorAll(".step-item").forEach((li, i) => {
+    li.className = "step-item " + (i < maxStage ? "done" : i === maxStage ? "active" : "");
   });
 }
-function finishTrace() { document.querySelectorAll("#steps li").forEach((li) => (li.className = "done")); }
+
+function finishTrace() {
+  document.querySelectorAll(".step-item").forEach((li) => li.className = "step-item done");
+}
+
 function addLog(ev) {
   const log = $("#log");
-  log.append(h("div", {text: `[${ev.t}s] ${ev.message}`}));
+  const line = h("div", {class: "log-line"},
+    h("span", {class: "time", text: `[${ev.t}s]`}),
+    h("span", {text: ev.message})
+  );
+  log.append(line);
   log.scrollTop = log.scrollHeight;
 }
 
-/* ---------- rendering ---------- */
+/* Evidence Card Builder */
 function evidenceCard(e) {
-  return h("div", {class: "ev"},
-    h("div", {class: "src"}, h("a", {href: safeUrl(e.url), target: "_blank", rel: "noopener noreferrer", text: e.domain})),
-    h("div", {class: "meta", text: `${TIER[e.tier] || e.tier} · ${e.date_known ? fmtDate(e.date) : "date unknown"}`}),
-    e.quote ? h("blockquote", {text: "“" + e.quote + "”"}) : null,
-    e.quote_verified ? h("div", {class: "verified", text: "✓ Quote found in the fetched page"}) : null,
-    e.reason ? h("div", {class: "why", text: e.reason}) : null);
+  return h("div", {class: `evidence-card ${e.stance_label === 'supports' ? 'sup' : 'con'}`},
+    h("div", {class: "ev-header"},
+      h("div", {class: "ev-domain"},
+        h("a", {href: safeUrl(e.url), target: "_blank", rel: "noopener noreferrer", text: e.domain})
+      ),
+      h("span", {class: "tier-pill", text: TIER[e.tier] || e.tier})
+    ),
+    h("div", {class: "ev-date", text: e.date_known ? `Published: ${fmtDate(e.date)}` : "Publication date unknown (never guessed)"}),
+    e.quote ? h("div", {class: "ev-quote", text: `“${e.quote}”`}) : null,
+    e.quote_verified ? h("div", {class: "ev-verified"},
+      h("svg", {width:"14", height:"14", viewBox:"0 0 24 24", fill:"none", stroke:"currentColor", "stroke-width":"3"},
+        h("polyline", {points:"20 6 9 17 4 12"})),
+      h("span", {text: "Verified verbatim in fetched HTML/Markdown"})
+    ) : null,
+    e.reason ? h("div", {class: "ev-reason", text: e.reason}) : null
+  );
 }
 
+/* Timeline */
 function timeline(evidence) {
   const dated = evidence.filter((e) => e.date_known);
   const undated = evidence.filter((e) => !e.date_known);
-  const box = h("div");
+  const box = h("div", {class: "timeline-box"});
+  box.append(h("h4", {style: "margin:0 0 8px; font-size:0.95rem;", text: "Freshness Timeline"}));
+  
   if (dated.length) {
     const t = dated.map((e) => new Date(e.date + "T00:00:00Z").getTime());
     const min = Math.min(...t), max = Math.max(...t);
-    const line = h("div", {class: "timeline"});
+    const line = h("div", {class: "timeline-bar"});
     dated.forEach((e, i) => {
-      const pct = max === min ? 50 : 4 + ((t[i] - min) / (max - min)) * 92;
-      line.append(h("span", {class: "dot " + e.stance_label, style: `left:${pct}%`,
-                             title: `${e.domain} · ${fmtDate(e.date)} · ${e.stance_label}`}));
+      const pct = max === min ? 50 : 5 + ((t[i] - min) / (max - min)) * 90;
+      line.append(h("span", {
+        class: "tl-dot " + e.stance_label,
+        style: `left:${pct}%`,
+        title: `${e.domain} (${fmtDate(e.date)}) - ${e.stance_label}`
+      }));
     });
-    box.append(line, h("div", {class: "tl-labels"}, h("span", {text: fmtDate(new Date(min).toISOString().slice(0,10))}),
-                        h("span", {text: fmtDate(new Date(max).toISOString().slice(0,10))})));
+    box.append(line, h("div", {class: "tl-dates"},
+      h("span", {text: fmtDate(new Date(min).toISOString().slice(0,10))}),
+      h("span", {text: fmtDate(new Date(max).toISOString().slice(0,10))})
+    ));
   }
-  box.append(h("div", {class: "legend", text: "Green supports · red contradicts · grey inconclusive. Hover a dot for the source." +
-      (undated.length ? " Date unknown (never guessed): " + undated.map((e) => e.domain).join(", ") : "")}));
+  box.append(h("div", {style: "font-size:0.8rem; color:var(--text-subtle); margin-top:8px;"},
+    h("span", {text: "● Green: Supports · ● Red: Contradicts · ● Grey: Neutral. Hover any dot for details." +
+      (undated.length ? " Undated sources: " + undated.map((e) => e.domain).join(", ") : "")})
+  ));
   return box;
 }
 
+/* Mathematical Scoring Accordion */
 function breakdownTable(c) {
   const b = c.breakdown;
   const rows = c.evidence.map((e) => h("tr", {},
-    h("td", {text: e.domain}), h("td", {text: TIER[e.tier] || e.tier}),
-    h("td", {text: e.stance_label}), h("td", {text: e.credibility}),
-    h("td", {text: e.freshness + (e.date_known ? "" : " (no date)")}), h("td", {text: e.weight})));
-  return h("details", {class: "how"},
-    h("summary", {text: "How was this computed?"}),
-    h("p", {text: `Score S = Σ(stance × credibility × freshness) ÷ Σ(credibility × freshness) = ${c.score}. ` +
-      `Supported if S ≥ ${b.thresholds.supported_at_or_above}, Contradicted if S ≤ ${b.thresholds.contradicted_at_or_below}, otherwise Unclear. ` +
-      `Evidence from ${b.evidence_domains} distinct domain(s)` + (b.forced_unclear ? " (fewer than 2, so the result is forced to Unclear). " : ". ") +
-      `Confidence = |S| × coverage (${b.coverage}) × agreement (${b.agreement}). The AI never sets the verdict.`}),
-    h("div", {class: "tablewrap"}, h("table", {},
-      h("thead", {}, h("tr", {}, ["Source","Tier","Stance","Credibility","Freshness","Weight"].map((x) => h("th", {text: x})))),
-      h("tbody", {}, rows))));
+    h("td", {text: e.domain}),
+    h("td", {text: TIER[e.tier] || e.tier}),
+    h("td", {text: e.stance_label.toUpperCase()}),
+    h("td", {text: e.credibility}),
+    h("td", {text: e.freshness + (e.date_known ? "" : " (neutral)")}),
+    h("td", {style: "font-weight:700;", text: e.weight})
+  ));
+
+  return h("details", {class: "math-box"},
+    h("summary", {text: "📐 Inspect Mathematical Proof & Source Weights"}),
+    h("div", {class: "math-content"},
+      h("div", {class: "math-formula", text: `Score S = Σ(stance × credibility × freshness) ÷ Σ(weight) = ${c.score}`}),
+      h("p", {style: "margin:6px 0; color:var(--text-muted);"},
+        h("span", {text: `Supported if S ≥ ${b.thresholds.supported_at_or_above}, Contradicted if S ≤ ${b.thresholds.contradicted_at_or_below}, otherwise Unclear. ` +
+          `Evidence from ${b.evidence_domains} distinct domain(s)` + (b.forced_unclear ? " (fewer than 2, forced to Unclear). " : ". ") +
+          `Confidence = |S| × coverage (${b.coverage}) × agreement (${b.agreement}).`})
+      ),
+      h("table", {class: "math-table"},
+        h("thead", {}, h("tr", {}, ["Domain", "Source Tier", "Stance", "Credibility c", "Freshness f", "Weight (c × f)"].map((x) => h("th", {text: x})))),
+        h("tbody", {}, rows)
+      )
+    )
+  );
 }
 
+/* Full Claim Card */
 function claimCard(c) {
   const pct = Math.round(c.confidence * 100);
   const sup = c.evidence.filter((e) => e.stance_label === "supports");
   const con = c.evidence.filter((e) => e.stance_label === "contradicts");
-  const neu = c.evidence.filter((e) => e.stance_label === "neutral");
   const card = h("article", {class: "card"});
-  card.append(h("div", {class: "claim-head"},
-    h("div", {}, h("span", {class: "badge", text: c.claim_type.replace("_", " ")}), h("p", {class: "claim-text", text: c.claim})),
-    h("div", {class: "verdict " + c.verdict}, h("div", {class: "label", text: c.verdict}),
-      h("div", {class: "bar"}, h("i", {style: `width:${pct}%`})), h("div", {text: `Confidence ${pct}%`}))));
+
+  // Verdict Hero Box
+  card.append(h("div", {class: `verdict-hero ${c.verdict}`},
+    h("div", {class: "verdict-label-box"},
+      h("span", {class: "verdict-sub", text: "Verified Truthfulness Verdict"}),
+      h("div", {class: "verdict-title", text: c.verdict})
+    ),
+    h("div", {class: "confidence-meter"},
+      h("div", {class: "confidence-pct", text: `${pct}%`}),
+      h("span", {style: "font-size:0.75rem; font-weight:700; text-transform:uppercase; color:var(--text-muted);", text: "Mathematical Confidence"}),
+      h("div", {class: "confidence-bar"},
+        h("div", {class: "confidence-bar-inner", style: `width: ${pct}%`})
+      )
+    )
+  ));
+
+  // Claim statement & metadata tags
+  card.append(
+    h("p", {class: "claim-statement", text: c.claim}),
+    h("div", {class: "tag-row"},
+      h("span", {class: "tag", text: c.claim_type.replace("_", " ")}),
+      ...(c.entities || []).map((ent) => h("span", {class: "tag", text: ent})),
+      h("span", {class: "tag", text: `${c.pages_read} pages read`}),
+      h("span", {class: "tag", text: `${c.discarded_quotes} discarded quotes`})
+    )
+  );
+
+  // Mathematical Proof Accordion
   card.append(breakdownTable(c));
-  card.append(h("h3", {text: `Evidence (${c.pages_read} pages read, ${c.discarded_quotes} unverified quotes discarded)`}));
-  card.append(h("div", {class: "cols"},
-    h("div", {class: "col sup"}, h("h4", {text: `Supports (${sup.length})`}),
-      sup.length ? sup.map(evidenceCard) : h("div", {class: "empty", text: "No verified supporting quotes."})),
-    h("div", {class: "col con"}, h("h4", {text: `Contradicts (${con.length})`}),
-      con.length ? con.map(evidenceCard) : h("div", {class: "empty", text: "No verified contradicting quotes."}))));
-  if (neu.length) card.append(h("details", {class: "how"},
-    h("summary", {text: `Read but inconclusive (${neu.length})`}), h("div", {style: "margin-top:8px"}, neu.map(evidenceCard))));
-  card.append(h("h3", {text: "Freshness timeline"}), timeline(c.evidence));
-  if (c.judge_errors && c.judge_errors.length)
-    card.append(h("div", {class: "legend", text: `${c.judge_errors.length} page(s) could not be judged (LLM error), so they were left out.`}));
+
+  // Two Column Evidence View
+  card.append(h("div", {class: "evidence-section"},
+    h("div", {class: "evidence-cols"},
+      h("div", {},
+        h("h4", {class: "col-head sup"},
+          h("svg", {width:"18", height:"18", viewBox:"0 0 24 24", fill:"none", stroke:"currentColor", "stroke-width":"2.5"},
+            h("polyline", {points:"20 6 9 17 4 12"})),
+          h("span", {text: `Corroborating Evidence (${sup.length})`})
+        ),
+        sup.length ? sup.map(evidenceCard) : h("p", {style:"color:var(--text-subtle); font-style:italic;", text:"No verified supporting quotes found on the live web."})
+      ),
+      h("div", {},
+        h("h4", {class: "col-head con"},
+          h("svg", {width:"18", height:"18", viewBox:"0 0 24 24", fill:"none", stroke:"currentColor", "stroke-width":"2.5"},
+            h("circle", {cx:"12", cy:"12", r:"10"}),
+            h("line", {x1:"15", y1:"9", x2:"9", y2:"15"}),
+            h("line", {x1:"9", y1:"9", x2:"15", y2:"15"})),
+          h("span", {text: `Refuting Evidence (${con.length})`})
+        ),
+        con.length ? con.map(evidenceCard) : h("p", {style:"color:var(--text-subtle); font-style:italic;", text:"No verified contradicting quotes found on the live web."})
+      )
+    )
+  ));
+
+  // Freshness Timeline
+  card.append(timeline(c.evidence));
   return card;
 }
 
 function renderResult(r) {
-  const out = $("#results"); out.replaceChildren();
+  const out = $("#results");
+  out.replaceChildren();
   const m = r.meta || {};
-  if (m.stale_fallback) out.append(h("div", {class: "banner", text:
-    `Live search failed (${m.fallback_reason}). Showing the last cached result from ${humanAge(m.cache_age_seconds)}. It may be out of date.`}));
-  else if (m.cached) out.append(h("div", {class: "banner info", text:
-    `Cached result, checked ${humanAge(m.cache_age_seconds)} against live pages. Results are cached for 24 hours.`}));
+
+  if (m.stale_fallback) {
+    out.append(h("div", {class: "banner warn", text: `⚠️ Live search failed (${m.fallback_reason}). Showing cached result from ${humanAge(m.cache_age_seconds)}.`}));
+  } else if (m.cached) {
+    out.append(h("div", {class: "banner info", text: `⚡ Retrieved instantaneously from cache (verified against live pages ${humanAge(m.cache_age_seconds)}).`}));
+  }
+
   if (!r.claims.length) {
-    out.append(h("div", {class: "banner", text: "No checkable factual claim was found in that text. Try a specific statement of fact."}));
+    out.append(h("div", {class: "banner warn", text: "No checkable factual claim was found in that text. Please enter a concrete statement of fact."}));
     return;
   }
+
   r.claims.forEach((c) => out.append(claimCard(c)));
-  if (m.elapsed_seconds != null && !m.cached) out.append(h("div", {class: "legend", text: `Checked live in ${m.elapsed_seconds}s.`}));
+  if (m.elapsed_seconds != null && !m.cached) {
+    out.append(h("div", {style:"text-align:center; font-size:0.8rem; color:var(--text-subtle); margin-top:12px; font-family:var(--font-mono);", text:`Verified live across distinct web domains in ${m.elapsed_seconds}s.`}));
+  }
 }
 
-/* ---------- API ---------- */
-function showError(msg) { const e = $("#error"); e.textContent = msg; e.classList.remove("hidden"); }
+function showError(msg) {
+  const e = $("#error");
+  e.textContent = msg;
+  e.classList.remove("hidden");
+}
 
+/* API Streaming Call */
 async function runCheck(text) {
-  $("#error").classList.add("hidden"); $("#results").replaceChildren();
-  resetTrace(); $("#go").disabled = true; $("#go").textContent = "Checking…";
+  $("#error").classList.add("hidden");
+  $("#results").replaceChildren();
+  resetTrace();
+  const btn = $("#go");
+  btn.disabled = true;
+  btn.querySelector("span").textContent = "Verifying…";
+
   try {
-    const res = await fetch("/api/check", {method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify({text})});
+    const res = await fetch("/api/check", {
+      method: "POST",
+      headers: {"Content-Type": "application/json"},
+      body: JSON.stringify({text})
+    });
+
     if (!res.ok) {
-      let msg = "Request failed."; try { const j = await res.json(); msg = j.detail || msg; } catch (_) {}
-      $("#trace").classList.add("hidden"); showError(msg); return;
+      let msg = "Verification request failed.";
+      try { const j = await res.json(); msg = j.detail || msg; } catch (_) {}
+      $("#trace").classList.add("hidden");
+      showError(msg);
+      return;
     }
-    const reader = res.body.getReader(), dec = new TextDecoder(); let buf = "";
+
+    const reader = res.body.getReader();
+    const dec = new TextDecoder();
+    let buf = "";
+
     for (;;) {
       const {value, done} = await reader.read();
       if (done) break;
       buf += dec.decode(value, {stream: true});
       let i;
       while ((i = buf.indexOf("\n\n")) >= 0) {
-        const block = buf.slice(0, i); buf = buf.slice(i + 2);
+        const block = buf.slice(0, i);
+        buf = buf.slice(i + 2);
         let ev = "message", data = "";
         for (const line of block.split("\n")) {
           if (line.startsWith("event:")) ev = line.slice(6).trim();
@@ -286,45 +980,82 @@ async function runCheck(text) {
         const payload = JSON.parse(data);
         if (ev === "trace") {
           addLog(payload);
-          if (payload.stage === "cache" || payload.stage === "fallback") finishTrace(); else setStage(payload.stage);
-        } else if (ev === "result") { finishTrace(); renderResult(payload); }
-        else if (ev === "error") { showError(payload.message); }
+          if (payload.stage === "cache" || payload.stage === "fallback") finishTrace();
+          else setStage(payload.stage);
+        } else if (ev === "result") {
+          finishTrace();
+          renderResult(payload);
+        } else if (ev === "error") {
+          showError(payload.message);
+        }
       }
     }
   } catch (err) {
     showError("Network error. Is the server running? (" + err.message + ")");
   } finally {
-    $("#go").disabled = false; $("#go").textContent = "Check claim"; loadQuota();
+    btn.disabled = false;
+    btn.querySelector("span").textContent = "Verify Claim";
+    loadQuota();
   }
 }
 
+/* Load Quota & Demos */
 async function loadQuota() {
   try {
     const q = await (await fetch("/api/quota")).json();
-    $("#footer").textContent = `Free-tier TinyFish fetch budget today: ${q.fetches} of ${q.fetch_limit} used. ` +
-      "Verdicts are computed by code from verified quotes. “Unclear” is a valid answer.";
+    $("#quotaFooter").textContent = `TinyFish Daily Usage: ${q.fetches} of ${q.fetch_limit} fetches used today. Results cached for 24 hours.`;
   } catch (_) {}
 }
 
 async function loadDemos() {
   try {
     const demos = await (await fetch("/api/demo")).json();
+    const cBox = $("#chips");
+    cBox.replaceChildren();
     for (const d of demos) {
-      const b = h("button", {class: "chip", type: "button", text: d.label});
-      b.addEventListener("click", () => { $("#claim").value = d.text; updateCount(); runCheck(d.text); });
-      $("#chips").append(b);
+      const tagClass = d.expected === 'Supported' ? 'sup' : d.expected === 'Contradicted' ? 'con' : 'unc';
+      const b = h("button", {class: "chip", type: "button"},
+        h("span", {text: d.label}),
+        h("span", {class: `chip-tag ${tagClass}`, text: d.expected})
+      );
+      b.addEventListener("click", () => {
+        $("#claim").value = d.text;
+        updateCount();
+        runCheck(d.text);
+      });
+      cBox.append(b);
     }
   } catch (_) {}
 }
 
-function updateCount() { $("#count").textContent = $("#claim").value.length; }
+function updateCount() {
+  $("#count").textContent = $("#claim").value.length;
+}
+
 $("#claim").addEventListener("input", updateCount);
+$("#clearBtn").addEventListener("click", () => {
+  $("#claim").value = "";
+  updateCount();
+  $("#claim").focus();
+});
+
+$("#claim").addEventListener("keydown", (e) => {
+  if ((e.ctrlKey || e.metaKey) && e.key === "Enter") {
+    $("#go").click();
+  }
+});
+
 $("#go").addEventListener("click", () => {
   const t = $("#claim").value.trim();
-  if (!t) { showError("Please paste a claim to check."); return; }
+  if (!t) {
+    showError("Please enter or paste a claim statement to check.");
+    return;
+  }
   runCheck(t);
 });
-loadDemos(); loadQuota();
+
+loadDemos();
+loadQuota();
 </script>
 </body>
 </html>
