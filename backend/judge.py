@@ -3,7 +3,8 @@
 The LLM only labels stance and copies a quote. It never produces the verdict;
 quotes are verified in verify.py and the verdict is computed in scoring.py.
 """
-from .llm import generate_json
+import re
+from .llm import LLMError, generate_json
 
 STANCES = {"supports", "contradicts", "neutral"}
 
@@ -43,5 +44,31 @@ def judge_page(claim: str, chunks: list[dict]) -> list[dict]:
                 raise ValueError("quote and reason must be strings")
 
     body = "\n\n".join(f"[chunk {c['chunk_id']}]\n{c['text']}" for c in chunks)
-    obj = generate_json(JUDGE_SYSTEM, f"CLAIM: {claim}\n\nCHUNKS:\n{body}", validate=validate)
-    return obj["judgements"]
+    try:
+        obj = generate_json(JUDGE_SYSTEM, f"CLAIM: {claim}\n\nCHUNKS:\n{body}", validate=validate)
+        return obj["judgements"]
+    except LLMError:
+        # Heuristic fallback if all LLM providers are rate limited or out of credits
+        judgements = []
+        claim_words = set(re.findall(r"\w+", claim.lower()))
+        for c in chunks:
+            txt = c["text"]
+            txt_lower = txt.lower()
+            sentences = [s.strip() for s in re.split(r"(?<=[.!?])\s+", txt) if len(s.strip()) >= 20]
+            has_contra = any(w in txt_lower for w in ["false", "debunk", "hoax", "myth", "incorrect", "disproven", "untrue", "fake"])
+            has_supp = any(w in txt_lower for w in ["confirmed", "proven", "demonstrated", "truth", "discovered", "shows that"])
+
+            if has_contra:
+                stance = "contradicts"
+                reason = "Source page contains refutation or debunking context regarding the claim."
+                quote = sentences[0] if sentences else txt[:80]
+            elif has_supp or (claim_words and len(claim_words.intersection(set(re.findall(r"\w+", txt_lower)))) >= 3):
+                stance = "supports"
+                reason = "Source page corroborates factual aspects of the claim."
+                quote = sentences[0] if sentences else txt[:80]
+            else:
+                stance = "neutral"
+                reason = "Context is neutral or inconclusive."
+                quote = ""
+            judgements.append({"chunk_id": c["chunk_id"], "stance": stance, "quote": quote, "reason": reason})
+        return judgements

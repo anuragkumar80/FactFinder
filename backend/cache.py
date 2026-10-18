@@ -49,7 +49,10 @@ def get_any(text: str) -> dict | None:
 
 def get_cached(text: str, ttl_hours: float | None = None) -> dict | None:
     """Like get_any, but None when older than the TTL."""
-    ttl = (config.CACHE_TTL_HOURS if ttl_hours is None else ttl_hours) * 3600
+    hours = config.CACHE_TTL_HOURS if ttl_hours is None else ttl_hours
+    if hours <= 0:
+        return None
+    ttl = hours * 3600
     hit = get_any(text)
     return hit if hit and hit["age_seconds"] <= ttl else None
 

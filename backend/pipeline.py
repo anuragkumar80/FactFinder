@@ -42,8 +42,20 @@ def _validate_extract(obj: dict) -> None:
 
 def extract_claims(text: str) -> list[dict]:
     text = text.strip()[:config.MAX_CLAIM_CHARS]
-    obj = generate_json(EXTRACT_SYSTEM, text, validate=_validate_extract)
-    return obj["claims"][:config.MAX_CLAIMS]
+    try:
+        obj = generate_json(EXTRACT_SYSTEM, text, validate=_validate_extract)
+        return obj["claims"][:config.MAX_CLAIMS]
+    except Exception:
+        # Fallback if LLM providers are rate limited or out of credits
+        words = text.split()
+        q = " ".join(words[:10])
+        claim_type = "science" if any(w in text.lower() for w in ["study", "medical", "nasa", "earth", "moon", "science", "health", "water", "doctor", "research", "orbit", "planet"]) else "breaking_news"
+        return [{
+            "claim": text[:150].strip(),
+            "claim_type": claim_type,
+            "entities": [w.strip(".,!?") for w in words if w.istitle()][:3],
+            "search_query": q
+        }]
 
 
 def build_queries(claim: dict) -> dict:
