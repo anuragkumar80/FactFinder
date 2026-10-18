@@ -40,6 +40,11 @@ def index():
     return FileResponse(ROOT / "frontend" / "index.html")
 
 
+@app.get("/logo.png")
+def get_logo():
+    return FileResponse(ROOT / "frontend" / "logo.png")
+
+
 @app.get("/healthz")
 def healthz():
     return {"ok": True}

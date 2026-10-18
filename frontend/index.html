@@ -1,15 +1,19 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="dark">
+<html lang="en" data-theme="light">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>FactFinder | Autonomous Live-Web Fact Verification Engine</title>
 <meta name="description" content="Autonomous live-web fact verification engine powered by TinyFish, BM25 semantic chunk ranking, zero-trust verbatim quote verification, and mathematical credibility scoring.">
 
+<!-- Professional Vector Favicon -->
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Cdefs%3E%3ClinearGradient id='bg' x1='0' y1='0' x2='40' y2='40' gradientUnits='userSpaceOnUse'%3E%3Cstop offset='0%25' stop-color='%234f46e5'/%3E%3Cstop offset='60%25' stop-color='%232563eb'/%3E%3Cstop offset='100%25' stop-color='%230891b2'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='40' height='40' rx='10' fill='url(%23bg)'/%3E%3Crect x='10' y='9.5' width='4.5' height='21' rx='2.25' fill='%23ffffff'/%3E%3Crect x='10' y='9.5' width='17.5' height='4.5' rx='2.25' fill='%23ffffff'/%3E%3Crect x='10' y='17.5' width='12' height='4.5' rx='2.25' fill='%23ffffff'/%3E%3Ccircle cx='27' cy='27' r='6' fill='%2310b981'/%3E%3Cpath d='M24.5 27l1.8 1.8 3.5-3.6' stroke='%23ffffff' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round' fill='none'/%3E%3C/svg%3E">
+
 <!-- Modern Typography -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+
 
 <style>
   :root {
@@ -65,40 +69,99 @@
 
   [data-theme="light"] {
     --bg-base: #f8fafc;
-    --bg-card: rgba(255, 255, 255, 0.88);
-    --bg-card-hover: rgba(255, 255, 255, 0.98);
+    --bg-card: #ffffff;
+    --bg-card-hover: #ffffff;
     --bg-input: #ffffff;
-    --bg-surface: rgba(15, 23, 42, 0.03);
+    --bg-surface: #f1f5f9;
     
-    --border: rgba(148, 163, 184, 0.22);
-    --border-hover: rgba(99, 102, 241, 0.45);
+    --border: #e2e8f0;
+    --border-hover: #94a3b8;
     --border-focus: #4f46e5;
     
     --text-primary: #0f172a;
-    --text-secondary: #475569;
-    --text-subtle: #94a3b8;
+    --text-secondary: #334155;
+    --text-subtle: #64748b;
     --text-inverse: #ffffff;
 
-    --brand-glow: rgba(99, 102, 241, 0.2);
+    --brand-glow: rgba(79, 70, 229, 0.18);
 
     --ok: #059669;
-    --ok-glow: rgba(5, 150, 105, 0.2);
+    --ok-glow: rgba(5, 150, 105, 0.15);
     --ok-bg: #ecfdf5;
     --ok-border: #a7f3d0;
 
     --bad: #e11d48;
-    --bad-glow: rgba(225, 29, 72, 0.2);
+    --bad-glow: rgba(225, 29, 72, 0.15);
     --bad-bg: #fff1f2;
     --bad-border: #fecdd3;
 
     --unk: #d97706;
-    --unk-glow: rgba(217, 119, 6, 0.2);
+    --unk-glow: rgba(217, 119, 6, 0.15);
     --unk-bg: #fffbeb;
     --unk-border: #fde68a;
 
-    --shadow-card: 0 12px 30px -6px rgba(15, 23, 42, 0.08), 0 0 0 1px var(--border);
-    --shadow-float: 0 20px 40px -10px rgba(15, 23, 42, 0.12);
+    --shadow-card: 0 4px 18px -2px rgba(15, 23, 42, 0.05), 0 0 0 1px #e2e8f0;
+    --shadow-float: 0 16px 36px -8px rgba(15, 23, 42, 0.12);
   }
+
+  /* Light theme high-contrast polish */
+  [data-theme="light"] .bg-ambient-1 {
+    background: radial-gradient(circle, rgba(99, 102, 241, 0.09) 0%, rgba(6, 182, 212, 0.05) 50%, transparent 70%);
+  }
+  [data-theme="light"] .bg-ambient-2 {
+    background: radial-gradient(circle, rgba(244, 63, 94, 0.05) 0%, rgba(99, 102, 241, 0.04) 50%, transparent 70%);
+  }
+  [data-theme="light"] .bg-grid {
+    opacity: 0.6;
+    background-image: linear-gradient(to right, rgba(203, 213, 225, 0.45) 1px, transparent 1px),
+                      linear-gradient(to bottom, rgba(203, 213, 225, 0.45) 1px, transparent 1px);
+  }
+  [data-theme="light"] .terminal-box {
+    background: #f8fafc;
+    border: 1px solid #cbd5e1;
+    box-shadow: inset 0 2px 4px rgba(15, 23, 42, 0.03);
+  }
+  [data-theme="light"] .terminal-line {
+    color: #1e293b;
+  }
+  [data-theme="light"] .terminal-time {
+    color: #64748b;
+    font-weight: 700;
+  }
+  [data-theme="light"] .char-bar {
+    background: #e2e8f0;
+  }
+  [data-theme="light"] .kbd-hint {
+    background: #f1f5f9;
+    border: 1px solid #cbd5e1;
+    color: #475569;
+  }
+  [data-theme="light"] .stage-icon-circle {
+    background: #e2e8f0;
+    color: #475569;
+  }
+  [data-theme="light"] .stance-track {
+    background: #e2e8f0;
+  }
+  [data-theme="light"] .ev-tier-badge {
+    background: #f1f5f9;
+    border-color: #e2e8f0;
+    color: #475569;
+  }
+  [data-theme="light"] .ev-quote-box {
+    background: #f8fafc;
+    border-left: 3px solid #6366f1;
+    color: #0f172a;
+  }
+  [data-theme="light"] .math-formula-box {
+    background: #f8fafc;
+    border-color: #e2e8f0;
+    color: #0f172a;
+  }
+  [data-theme="light"] .gauge-track {
+    stroke: rgba(15, 23, 42, 0.08);
+  }
+
 
   * { box-sizing: border-box; margin: 0; padding: 0; }
   
@@ -152,9 +215,10 @@
   .wrap {
     position: relative;
     z-index: 1;
-    max-width: 1080px;
-    margin: 0 auto;
-    padding: 24px 20px 100px;
+    width: 100%;
+    max-width: 100%;
+    padding: 18px clamp(16px, 2.8vw, 44px) 80px;
+    box-sizing: border-box;
   }
 
   /* Top Navigation Bar */
@@ -167,35 +231,73 @@
     backdrop-filter: blur(24px);
     -webkit-backdrop-filter: blur(24px);
     border: 1px solid var(--border);
-    border-radius: var(--radius-pill);
-    margin-bottom: 34px;
+    border-radius: var(--radius-md);
+    margin-bottom: 30px;
     box-shadow: var(--shadow-card);
   }
   .brand {
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 14px;
     text-decoration: none;
     color: var(--text-primary);
   }
   .brand-logo {
     width: 42px;
     height: 42px;
-    border-radius: 12px;
-    background: var(--brand-gradient);
     display: flex;
     align-items: center;
     justify-content: center;
-    box-shadow: 0 4px 18px var(--brand-glow);
-    transition: transform 0.2s ease;
+    flex-shrink: 0;
+    border-radius: 11px;
+    transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1), filter 0.25s ease;
+    filter: drop-shadow(0 4px 14px rgba(99, 102, 241, 0.28));
   }
-  .brand:hover .brand-logo { transform: scale(1.05) rotate(-3deg); }
-  .brand-logo svg { width: 22px; height: 22px; fill: #ffffff; }
+  .brand:hover .brand-logo {
+    transform: scale(1.07) rotate(-2deg);
+    filter: drop-shadow(0 6px 20px rgba(99, 102, 241, 0.48));
+  }
+  .brand-logo svg {
+    width: 100%;
+    height: 100%;
+    display: block;
+  }
+  .brand-text-wrap {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
   .brand-text {
     font-family: var(--font-heading);
     font-weight: 800;
-    font-size: 1.45rem;
+    font-size: 1.4rem;
     letter-spacing: -0.03em;
+    display: flex;
+    align-items: center;
+    line-height: 1.1;
+  }
+  .brand-badge {
+    font-family: var(--font-mono);
+    font-size: 0.62rem;
+    font-weight: 800;
+    color: #4f46e5;
+    background: rgba(99, 102, 241, 0.12);
+    border: 1px solid rgba(99, 102, 241, 0.28);
+    padding: 2px 7px;
+    border-radius: 4px;
+    letter-spacing: 0.08em;
+    margin-left: 8px;
+    vertical-align: middle;
+  }
+  [data-theme="dark"] .brand-badge {
+    color: #818cf8;
+    background: rgba(99, 102, 241, 0.2);
+  }
+  .brand-subtext {
+    font-size: 0.72rem;
+    color: var(--text-subtle);
+    font-weight: 600;
+    letter-spacing: 0.01em;
   }
   .gradient-text {
     background: var(--brand-gradient);
@@ -593,15 +695,25 @@
 
   .stages-track {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-    gap: 8px;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 10px;
     margin-bottom: 16px;
+  }
+  @media (max-width: 1024px) {
+    .stages-track {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+  @media (max-width: 640px) {
+    .stages-track {
+      grid-template-columns: repeat(2, 1fr);
+    }
   }
   .stage-node {
     background: var(--bg-input);
     border: 1px solid var(--border);
     border-radius: var(--radius-sm);
-    padding: 10px;
+    padding: 10px 12px;
     font-size: 0.8rem;
     font-weight: 600;
     color: var(--text-subtle);
@@ -631,6 +743,7 @@
     justify-content: center;
     font-size: 0.7rem;
     font-family: var(--font-mono);
+    flex-shrink: 0;
   }
   .stage-node.active .stage-icon-circle { background: var(--brand-from); color: #fff; }
   .stage-node.done .stage-icon-circle { background: var(--ok); color: #fff; }
@@ -1187,22 +1300,330 @@
   }
   @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-  /* Footer */
+  /* ── Ultra-Premium Responsive Footer ── */
   footer {
-    text-align: center;
-    margin-top: 60px;
-    font-size: 0.85rem;
+    margin-top: 80px;
+    position: relative;
+    padding-top: 56px;
+    padding-bottom: 36px;
+  }
+  footer::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(99, 102, 241, 0.45) 20%, rgba(6, 182, 212, 0.45) 80%, transparent);
+  }
+  .footer-inner {
+    display: grid;
+    grid-template-columns: 1.8fr 1.15fr 1.15fr 1.15fr;
+    gap: 40px 32px;
+    margin-bottom: 44px;
+    align-items: start;
+  }
+  @media (max-width: 1080px) and (min-width: 681px) {
+    .footer-inner {
+      grid-template-columns: repeat(3, 1fr);
+      gap: 36px 24px;
+    }
+    .footer-brand-col {
+      grid-column: 1 / -1;
+      margin-bottom: 8px;
+    }
+    .footer-brand-desc {
+      max-width: 640px !important;
+    }
+  }
+  @media (max-width: 680px) {
+    .footer-inner {
+      grid-template-columns: 1fr;
+      gap: 32px;
+    }
+    .footer-brand-col {
+      grid-column: span 1;
+    }
+  }
+  .footer-brand-col {
+    display: flex;
+    flex-direction: column;
+  }
+  .footer-logo-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 14px;
+    text-decoration: none;
+    color: var(--text-primary);
+  }
+  .footer-logo-row .brand-logo {
+    width: 38px;
+    height: 38px;
+    filter: drop-shadow(0 3px 12px rgba(99, 102, 241, 0.25));
+  }
+  .footer-brand-name {
+    font-family: var(--font-heading);
+    font-weight: 800;
+    font-size: 1.28rem;
+    letter-spacing: -0.03em;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .footer-brand-desc {
+    font-size: 0.86rem;
+    color: var(--text-secondary);
+    line-height: 1.65;
+    max-width: 340px;
+    margin-bottom: 18px;
+  }
+  .footer-status-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 14px;
+    border-radius: var(--radius-pill);
+    background: var(--ok-bg);
+    border: 1px solid var(--ok-border);
+    font-size: 0.74rem;
+    font-weight: 600;
+    color: var(--ok);
+    width: fit-content;
+    margin-bottom: 18px;
+    box-shadow: 0 2px 8px var(--ok-glow);
+  }
+  .footer-status-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--ok);
+    box-shadow: 0 0 8px var(--ok-glow);
+    animation: pulseGlow 2s infinite ease-in-out;
+  }
+  .footer-tech-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 7px;
+  }
+  .footer-chip {
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    font-weight: 600;
+    padding: 3px 10px;
+    border-radius: var(--radius-pill);
+    border: 1px solid var(--border);
+    color: var(--text-subtle);
+    background: var(--bg-surface);
+    letter-spacing: 0.02em;
+    transition: all 0.2s ease;
+  }
+  .footer-chip:hover {
+    color: var(--text-primary);
+    border-color: var(--border-hover);
+    transform: translateY(-1px);
+    background: var(--bg-card);
+  }
+  .footer-col-title {
+    font-family: var(--font-heading);
+    font-size: 0.8rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.09em;
+    color: var(--text-primary);
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .footer-col-title::after {
+    content: "";
+    display: block;
+    width: 14px;
+    height: 2px;
+    background: var(--brand-from);
+    border-radius: 2px;
+    opacity: 0.7;
+  }
+  .footer-links {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 11px;
+    padding: 0;
+    margin: 0;
+  }
+  .footer-links a {
+    font-size: 0.87rem;
+    color: var(--text-secondary);
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.2s ease;
+    outline: none;
+    user-select: none;
+  }
+  .footer-links a:hover {
+    color: var(--text-primary);
+    transform: translateX(3px);
+  }
+  .footer-links a:focus,
+  .footer-links a:focus-visible {
+    outline: none;
+    color: var(--text-primary);
+  }
+  .footer-links a svg {
+    opacity: 0.55;
+    flex-shrink: 0;
+    transition: opacity 0.2s ease, stroke 0.2s ease;
+  }
+  .footer-links a:hover svg {
+    opacity: 1;
+    stroke: var(--brand-to);
+  }
+  .footer-divider {
+    border: none;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--border), transparent);
+    margin-bottom: 24px;
+  }
+  .footer-bottom {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+  @media (max-width: 768px) {
+    .footer-bottom {
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+    }
+    .footer-bottom-right {
+      justify-content: center;
+    }
+  }
+  .footer-copy {
+    font-size: 0.82rem;
     color: var(--text-subtle);
   }
+  .footer-bottom-right {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    flex-wrap: wrap;
+  }
   .footer-quota-pill {
-    display: inline-block;
-    padding: 6px 16px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 14px;
     background: var(--bg-card);
     border: 1px solid var(--border);
     border-radius: var(--radius-pill);
-    margin-bottom: 12px;
     font-family: var(--font-mono);
+    font-size: 0.76rem;
+    color: var(--text-subtle);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
   }
+  .footer-quota-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--ok);
+    flex-shrink: 0;
+    box-shadow: 0 0 6px var(--ok-glow);
+  }
+  .footer-back-top {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--bg-surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-pill);
+    padding: 6px 14px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-family: var(--font-body);
+  }
+  .footer-back-top:hover {
+    background: var(--bg-card);
+    color: var(--text-primary);
+    border-color: var(--border-hover);
+    transform: translateY(-2px);
+  }
+  .footer-back-top svg {
+    transition: transform 0.2s ease;
+  }
+  .footer-back-top:hover svg {
+    transform: translateY(-2px);
+  }
+
+  /* Global Comprehensive Responsiveness */
+  @media (max-width: 900px) {
+    .nav-center { display: none !important; }
+  }
+  @media (max-width: 640px) {
+    .navbar {
+      padding: 12px 14px !important;
+      margin-bottom: 20px !important;
+    }
+    .brand-subtext {
+      display: none !important;
+    }
+    .brand-text {
+      font-size: 1.2rem !important;
+    }
+    .brand-logo {
+      width: 36px !important;
+      height: 36px !important;
+    }
+    .hero {
+      margin: 16px 0 20px !important;
+      text-align: center;
+    }
+    .hero h1 {
+      font-size: 1.75rem !important;
+    }
+    .hero p {
+      font-size: 0.9rem !important;
+    }
+    .card-main {
+      padding: 14px !important;
+    }
+    .input-toolbar {
+      flex-direction: column !important;
+      align-items: stretch !important;
+      gap: 12px !important;
+    }
+    .toolbar-left, .toolbar-right {
+      width: 100% !important;
+      justify-content: space-between !important;
+    }
+    .btn-run {
+      width: 100% !important;
+      justify-content: center !important;
+    }
+    .metrics-bar {
+      grid-template-columns: 1fr !important;
+    }
+    .res-header {
+      flex-direction: column !important;
+      align-items: flex-start !important;
+      gap: 12px !important;
+    }
+    .res-actions {
+      width: 100% !important;
+      justify-content: flex-start !important;
+      flex-wrap: wrap !important;
+    }
+  }
+
   .hidden { display: none !important; }
 
   /* Print Styles */
@@ -1224,9 +1645,39 @@
   <header class="navbar">
     <a href="#" class="brand">
       <div class="brand-logo">
-        <svg viewBox="0 0 24 24"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 10.99h7c-.53 4.12-3.28 7.79-7 8.94V12H5V6.3l7-3.11v8.8z"/></svg>
+        <svg class="ff-logo-svg" width="42" height="42" viewBox="0 0 42 42" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="ffGradPrimaryNav" x1="4" y1="4" x2="38" y2="38" gradientUnits="userSpaceOnUse">
+              <stop offset="0%" stop-color="#6366f1"/>
+              <stop offset="50%" stop-color="#3b82f6"/>
+              <stop offset="100%" stop-color="#06b6d4"/>
+            </linearGradient>
+            <linearGradient id="ffGradBgNav" x1="0" y1="0" x2="42" y2="42" gradientUnits="userSpaceOnUse">
+              <stop offset="0%" stop-color="rgba(99, 102, 241, 0.16)"/>
+              <stop offset="100%" stop-color="rgba(6, 182, 212, 0.06)"/>
+            </linearGradient>
+            <linearGradient id="ffGradBorderNav" x1="0" y1="0" x2="42" y2="42" gradientUnits="userSpaceOnUse">
+              <stop offset="0%" stop-color="rgba(99, 102, 241, 0.5)"/>
+              <stop offset="50%" stop-color="rgba(59, 130, 246, 0.25)"/>
+              <stop offset="100%" stop-color="rgba(6, 182, 212, 0.45)"/>
+            </linearGradient>
+          </defs>
+          <rect x="1" y="1" width="40" height="40" rx="11" fill="url(#ffGradBgNav)"/>
+          <rect x="1" y="1" width="40" height="40" rx="11" stroke="url(#ffGradBorderNav)" stroke-width="1.2"/>
+          <circle cx="18" cy="18" r="8" fill="url(#ffGradPrimaryNav)" fill-opacity="0.08"/>
+          <circle cx="18" cy="18" r="8.5" stroke="url(#ffGradPrimaryNav)" stroke-width="2.6"/>
+          <path d="M12.8 14.5 C14.2 11.8 19.5 10.8 22.8 12.8" stroke="rgba(255, 255, 255, 0.6)" stroke-width="1.2" stroke-linecap="round"/>
+          <path d="M24.6 24.6 L32.2 32.2" stroke="url(#ffGradPrimaryNav)" stroke-width="2.8" stroke-linecap="round"/>
+          <circle cx="32.2" cy="32.2" r="1.4" fill="#06b6d4"/>
+          <path d="M14 18.2 L17.2 21.4 L22.8 14.8" stroke="#10b981" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+          <circle cx="28.5" cy="10.5" r="2.2" fill="#10b981"/>
+          <circle cx="28.5" cy="10.5" r="3.6" stroke="#10b981" stroke-opacity="0.4" stroke-width="1"/>
+        </svg>
       </div>
-      <div class="brand-text">Fact<span class="gradient-text">Finder</span></div>
+      <div class="brand-text-wrap">
+        <div class="brand-text">Fact<span class="gradient-text">Finder</span> <span class="brand-badge">PRO</span></div>
+        <div class="brand-subtext">Autonomous Live-Web Fact Verification Engine</div>
+      </div>
     </a>
     
     <div class="nav-center">
@@ -1241,13 +1692,17 @@
     </div>
 
     <div class="nav-actions">
-      <button class="btn-icon" id="themeToggle" title="Toggle Light/Dark Theme">☀️</button>
+      <a href="https://github.com/anuragkumar80/FactFinder" target="_blank" rel="noopener noreferrer" class="btn-icon" title="View Source on GitHub" aria-label="GitHub Repository">
+        <svg width="19" height="19" viewBox="0 0 24 24" fill="currentColor"><path fill-rule="evenodd" clip-rule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.53 1.032 1.53 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"/></svg>
+      </a>
+      <button class="btn-icon" id="themeToggle" title="Switch to Dark Mode">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+      </button>
     </div>
   </header>
 
   <!-- Hero Section -->
   <section class="hero">
-    <div class="badge-hero">✦ AzinHack 2026 Live Prototype v0.1</div>
     <h1>Verify Any Claim Against the <span class="gradient-text">Live Web</span></h1>
     <p>Zero-trust autonomous fact verification. LLM extracts atomic claims; TinyFish crawls live web sources; quotes are verified verbatim; and verdicts are mathematically computed in code.</p>
   </section>
@@ -1288,7 +1743,7 @@
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
           <span>Instant Pre-Warmed Benchmark Claims:</span>
         </div>
-        <span class="demo-fast-tag">⚡ &lt;1s Response from SQLite</span>
+        <span class="demo-fast-tag">&lt;1s Response from SQLite</span>
       </div>
       <div class="demo-chips" id="demoChips"></div>
     </div>
@@ -1311,7 +1766,7 @@
         <span>Live Verification Pipeline</span>
       </div>
       <div class="stepper-badge-group">
-        <span class="stepper-timer" id="stepperTimer">⏱️ 0.0s</span>
+        <span class="stepper-timer" id="stepperTimer">0.0s</span>
         <div class="stepper-live-tag">
           <div class="spinner-dot"></div>
           <span>Streaming SSE Telemetry</span>
@@ -1329,8 +1784,160 @@
 
   <!-- Footer -->
   <footer>
-    <div class="footer-quota-pill" id="footerQuota">Connecting to TinyFish quota monitor…</div>
-    <p>AzinHack 2026 Submission by <strong>Team Fine Shyts</strong> (Kunal, Dev, Anurag, Uday) · Open Source MIT</p>
+    <div class="footer-inner">
+
+      <!-- Column 1: Brand & Status -->
+      <div class="footer-brand-col">
+        <a href="#" class="footer-logo-row">
+          <div class="brand-logo footer-logo">
+            <svg class="ff-logo-svg" width="38" height="38" viewBox="0 0 42 42" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <defs>
+                <linearGradient id="ffGradPrimaryFoot" x1="4" y1="4" x2="38" y2="38" gradientUnits="userSpaceOnUse">
+                  <stop offset="0%" stop-color="#6366f1"/>
+                  <stop offset="50%" stop-color="#3b82f6"/>
+                  <stop offset="100%" stop-color="#06b6d4"/>
+                </linearGradient>
+                <linearGradient id="ffGradBgFoot" x1="0" y1="0" x2="42" y2="42" gradientUnits="userSpaceOnUse">
+                  <stop offset="0%" stop-color="rgba(99, 102, 241, 0.16)"/>
+                  <stop offset="100%" stop-color="rgba(6, 182, 212, 0.06)"/>
+                </linearGradient>
+                <linearGradient id="ffGradBorderFoot" x1="0" y1="0" x2="42" y2="42" gradientUnits="userSpaceOnUse">
+                  <stop offset="0%" stop-color="rgba(99, 102, 241, 0.5)"/>
+                  <stop offset="50%" stop-color="rgba(59, 130, 246, 0.25)"/>
+                  <stop offset="100%" stop-color="rgba(6, 182, 212, 0.45)"/>
+                </linearGradient>
+              </defs>
+              <rect x="1" y="1" width="40" height="40" rx="11" fill="url(#ffGradBgFoot)"/>
+              <rect x="1" y="1" width="40" height="40" rx="11" stroke="url(#ffGradBorderFoot)" stroke-width="1.2"/>
+              <circle cx="18" cy="18" r="8" fill="url(#ffGradPrimaryFoot)" fill-opacity="0.08"/>
+              <circle cx="18" cy="18" r="8.5" stroke="url(#ffGradPrimaryFoot)" stroke-width="2.6"/>
+              <path d="M12.8 14.5 C14.2 11.8 19.5 10.8 22.8 12.8" stroke="rgba(255, 255, 255, 0.6)" stroke-width="1.2" stroke-linecap="round"/>
+              <path d="M24.6 24.6 L32.2 32.2" stroke="url(#ffGradPrimaryFoot)" stroke-width="2.8" stroke-linecap="round"/>
+              <circle cx="32.2" cy="32.2" r="1.4" fill="#06b6d4"/>
+              <path d="M14 18.2 L17.2 21.4 L22.8 14.8" stroke="#10b981" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+              <circle cx="28.5" cy="10.5" r="2.2" fill="#10b981"/>
+              <circle cx="28.5" cy="10.5" r="3.6" stroke="#10b981" stroke-opacity="0.4" stroke-width="1"/>
+            </svg>
+          </div>
+          <span class="footer-brand-name">Fact<span class="gradient-text">Finder</span> <span class="brand-badge">PRO</span></span>
+        </a>
+        <p class="footer-brand-desc">Autonomous live-web fact verification engine. Corroborates breaking claims against live sources with zero-trust verbatim proof, BM25 retrieval, and mathematical consensus.</p>
+        <div class="footer-status-pill">
+          <span class="footer-status-dot"></span>
+          <span>Dual Web Crawlers Operational</span>
+        </div>
+        <div class="footer-tech-chips">
+          <span class="footer-chip">Python 3.11</span>
+          <span class="footer-chip">FastAPI</span>
+          <span class="footer-chip">TinyFish</span>
+          <span class="footer-chip">BM25</span>
+          <span class="footer-chip">SQLite</span>
+          <span class="footer-chip">SSE Telemetry</span>
+        </div>
+      </div>
+
+      <!-- Column 2: Pipeline Engine -->
+      <div>
+        <div class="footer-col-title">Engine Pipeline</div>
+        <ul class="footer-links">
+          <li><a href="#claim">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            1. Claim Extraction
+          </a></li>
+          <li><a href="#claim">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+            2. Dual Live Web Search
+          </a></li>
+          <li><a href="#claim">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+            3. Markdown DOM Extraction
+          </a></li>
+          <li><a href="#claim">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
+            4. LLM Stance Evaluation
+          </a></li>
+          <li><a href="#claim">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+            5. Verbatim Proof Matching
+          </a></li>
+          <li><a href="#claim">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+            6. Mathematical Scoring
+          </a></li>
+        </ul>
+      </div>
+
+      <!-- Column 3: Integrity Guarantees -->
+      <div>
+        <div class="footer-col-title">Verification Integrity</div>
+        <ul class="footer-links">
+          <li><a href="#">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            Zero-Trust Verbatim Proof
+          </a></li>
+          <li><a href="#">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+            4-Tier Domain Authority
+          </a></li>
+          <li><a href="#">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            Temporal Freshness Decay
+          </a></li>
+          <li><a href="#">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+            Anti-Hallucination Isolation
+          </a></li>
+          <li><a href="#">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.21 15.89A10 10 0 1 1 8 2.83"/><path d="M22 12A10 10 0 0 0 12 2v10z"/></svg>
+            Stance Distribution Consensus
+          </a></li>
+        </ul>
+      </div>
+
+      <!-- Column 4: Resources & API -->
+      <div>
+        <div class="footer-col-title">Resources & API</div>
+        <ul class="footer-links">
+          <li><a href="https://github.com/anuragkumar80/FactFinder" target="_blank" rel="noopener noreferrer">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg>
+            GitHub (anuragkumar80/FactFinder)
+          </a></li>
+          <li><a href="/api/quota" target="_blank">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+            Live Quota Monitor API
+          </a></li>
+          <li><a href="/healthz" target="_blank">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+            Health Status (/healthz)
+          </a></li>
+          <li><a href="/api/demo" target="_blank">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+            Pre-Warmed Demos (/api/demo)
+          </a></li>
+          <li><a href="#">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            Open Source MIT License
+          </a></li>
+        </ul>
+      </div>
+
+    </div>
+
+    <hr class="footer-divider">
+
+    <div class="footer-bottom">
+      <span class="footer-copy">&copy; 2026 FactFinder &mdash; Autonomous Zero-Trust Fact Verification &mdash; MIT License</span>
+      <div class="footer-bottom-right">
+        <div class="footer-quota-pill">
+          <span class="footer-quota-dot"></span>
+          <span id="footerQuota">Connecting to quota monitor&hellip;</span>
+        </div>
+        <button class="footer-back-top" onclick="window.scrollTo({top:0,behavior:'smooth'})" title="Scroll back to top">
+          <span>Top</span>
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="18 15 12 9 6 15"/></svg>
+        </button>
+      </div>
+    </div>
   </footer>
 </div>
 
@@ -1395,14 +2002,24 @@ function fmtDate(iso) {
   return d.toLocaleDateString(undefined, {year:"numeric", month:"short", day:"numeric", timeZone:"UTC"});
 }
 
+const MOON_SVG = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>`;
+const SUN_SVG  = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>`;
 /* Theme Toggle */
 const themeBtn = $("#themeToggle");
-themeBtn.addEventListener("click", () => {
-  const cur = document.documentElement.getAttribute("data-theme") || "dark";
-  const nxt = cur === "dark" ? "light" : "dark";
-  document.documentElement.setAttribute("data-theme", nxt);
-  themeBtn.textContent = nxt === "dark" ? "☀️" : "🌙";
-});
+const initialTheme = localStorage.getItem("factfinder_theme") || "light";
+document.documentElement.setAttribute("data-theme", initialTheme);
+if (themeBtn) {
+  themeBtn.innerHTML = initialTheme === "light" ? MOON_SVG : SUN_SVG;
+  themeBtn.setAttribute("title", initialTheme === "light" ? "Switch to Dark Mode" : "Switch to Light Mode");
+  themeBtn.addEventListener("click", () => {
+    const cur = document.documentElement.getAttribute("data-theme") || "light";
+    const nxt = cur === "dark" ? "light" : "dark";
+    document.documentElement.setAttribute("data-theme", nxt);
+    localStorage.setItem("factfinder_theme", nxt);
+    themeBtn.innerHTML = nxt === "light" ? MOON_SVG : SUN_SVG;
+    themeBtn.setAttribute("title", nxt === "light" ? "Switch to Dark Mode" : "Switch to Light Mode");
+  });
+}
 
 /* Live Stepper & Terminal Log */
 let maxStage = -1;
@@ -1425,7 +2042,7 @@ function resetTrace() {
   if (timerInterval) clearInterval(timerInterval);
   timerInterval = setInterval(() => {
     const sec = ((Date.now() - startTime) / 1000).toFixed(1);
-    $("#stepperTimer").textContent = `⏱️ ${sec}s`;
+    $("#stepperTimer").textContent = `${sec}s`;
   }, 100);
 }
 
@@ -1564,7 +2181,7 @@ function timeline(evidence) {
     ));
   }
   box.append(h("div", {style: "font-size:0.8rem; color:var(--text-subtle); margin-top:10px;"},
-    h("span", {text: "● Green: Corroborating · ● Red: Refuting · ● Grey: Neutral. Hover pins for domain details." +
+    h("span", {text: "Green: Corroborating · Red: Refuting · Grey: Neutral. Hover pins for domain details." +
       (undated.length ? " Undated sources: " + undated.map((e) => e.domain).join(", ") : "")})
   ));
   return box;
@@ -1782,9 +2399,9 @@ function renderResult(r) {
   currentResultData = r;
 
   if (m.stale_fallback) {
-    out.append(h("div", {class: "alert-box warn", text: `⚠️ Live search hit provider limit (${m.fallback_reason}). Displaying verified cache result from ${humanAge(m.cache_age_seconds)}.`}));
+    out.append(h("div", {class: "alert-box warn", text: `Live search hit provider limit (${m.fallback_reason}). Displaying verified cache result from ${humanAge(m.cache_age_seconds)}.`}));
   } else if (m.cached) {
-    out.append(h("div", {class: "alert-box info", text: `⚡ Retrieved from SQLite pre-warm cache in <1s (verified against live web pages ${humanAge(m.cache_age_seconds)}).`}));
+    out.append(h("div", {class: "alert-box info", text: `Retrieved from SQLite pre-warm cache in <1s (verified against live web pages ${humanAge(m.cache_age_seconds)}).`}));
   }
 
   if (!r.claims || !r.claims.length) {
